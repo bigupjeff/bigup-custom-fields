@@ -23,7 +23,7 @@
  */
 spl_autoload_register( function( $class ) {
 
-    $namespace = 'Bigup\\Contact_Form\\';
+    $namespace = 'Bigup\\Custom_Fields\\';
     $root_dir = dirname( dirname( __FILE__ ), 1 );
     $sub_dir = str_replace( $root_dir, '', dirname( __FILE__ ) );
     $filename_prefix = 'class-';

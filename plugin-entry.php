@@ -27,13 +27,17 @@ namespace Bigup\Custom_Fields;
 $url = plugin_dir_url( __FILE__ );
 define( 'BIGUP_CUSTOM_FIELDS_PLUGIN_URL', $url );
 $path = plugin_dir_path( __FILE__ );
-define( 'BIGUP_CUSTOM_FIELDS_PLUGIN_PATHL', $path );
+define( 'BIGUP_CUSTOM_FIELDS_PLUGIN_PATH', $path );
 
 /**
  * Load PHP autoloader to ready the classes.
  */
-require_once( plugin_dir_path( __FILE__ ) . 'classes/autoload.php');
+require_once( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'classes/autoload.php' );
 
+/**
+ * Init class which in turn calls all plugin dependencies.
+ */
+new Init();
 
 /**
  * If the user is on admin page, process the admin settings menu.

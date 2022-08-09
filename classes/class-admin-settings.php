@@ -7,15 +7,12 @@ namespace Bigup\Custom_Fields;
  * Hook into the WP admin area and add menu options and settings
  * pages.
  * 
- * ###########
- * # WARNING #
- * ###########
- * 
+ * **WARNING**
  * To add multiple sections to the same settings page, all settings registered
  * for that page MUST BE IN THE SAME 'OPTION GROUP'. In the register_setting
- * function call this is the first argument as follows:
+ * function call, this is the first argument as follows:
  * 
- * register_setting( 'option_group', 'from_email' );
+ * register_setting( 'option_group_name', 'setting_name' );
  *
  * @package bigup_custom_fields
  * @author Jefferson Real <me@jeffersonreal.uk>
@@ -24,19 +21,26 @@ namespace Bigup\Custom_Fields;
  * @link https://jeffersonreal.uk
  */
 
+
 class Admin_Settings {
+
+
+    /**
+     * Settings page slug to add with add_submenu_page().
+     */
+    public $admin_label = 'Custom Fields';
+
+
+    /**
+     * Settings page slug to add with add_submenu_page().
+     */
+    public $page_slug = 'bigup-web-custom-fields';
 
 
     /**
      * Settings group name called by settings_fields().
      */
     public $group_name = 'group_custom_fields_settings';
-
-
-    /**
-     * Settings page slug to add with add_submenu_page().
-     */
-    public $page_slug = 'custom-field-settings';
 
 
     /**
@@ -49,6 +53,8 @@ class Admin_Settings {
      * Init the class by hooking into the admin interface.
      */
     public function __construct() {
+		add_action( 'bigup_below_parent_settings_page_heading', [ &$this, 'echo_plugin_settings_link' ] );
+		new Admin_Settings_Parent();
         add_action( 'admin_menu', [ &$this, 'register_admin_menu' ], 99 );
         add_action( 'admin_init', [ &$this, 'register_settings' ] );
     }
@@ -56,59 +62,44 @@ class Admin_Settings {
 
     /**
      * Add admin menu option to sidebar
+	 * 
+	 * Calls Parent_Admin_Settings() to ensure a parent menu exists.
      */
     public function register_admin_menu() {
 
-		// Add Bigup Web parent menu, if it doesn't exist.
 		$parent_menu = menu_page_url( 'bigup-web-settings', false );
-		if ( false === !! $parent_menu ) {
-			add_menu_page(
-				'Bigup Web Settings',             //page_title
-				'Bigup Web',		              //menu_title
-				'manage_options',	              //capability
-				'bigup-web-settings',             //menu_slug
-				[ &$this, 'create_parent_page' ], //function
-				'dashicons-bigup-fist',		      //icon_url
-				4					              //position
-			);
-		}
+		if ( ! $parent_menu ) error_log( 'Bigup\Custom_Fields Parent settings page not found!' );
 
 		// Add sub menu for this plugin.
         add_submenu_page(
-            'bigup-web-settings',               //parent_slug
-            'Custom Fields Settings',           //page_title
-            'Custom Fields',                    //menu_title
+            Admin_Settings_Parent::$page_slug,  //parent_slug
+            $this->admin_label . ' Settings',   //page_title
+            $this->admin_label,                 //menu_title
             'manage_options',                   //capability
-            'custom-fields-settings',           //menu_slug
+            $this->page_slug,                   //menu_slug
             [ &$this, 'create_settings_page' ], //function
             null,                               //position
         );
+
     }
 
 
     /**
-     * Create Contact Form Settings Page
+     * Echo a link to this plugin's settings page.
      */
-    public function create_parent_page() {
+    public function echo_plugin_settings_link() {
 		?>
 
-		<div class="wrap">
-			<h1>
-				<span class="dashicons-bigup-logo" style="font-size: 2em; margin-right: 0.2em;"></span>
-				Bigup Web Settings
-			</h1>
-
-			<a href="/wp-admin/admin.php?page=custom-fields-settings">
-				Go to custom fields settings
-			</a>
-		</div>
+		<a href="/wp-admin/admin.php?page=<?php echo $this->page_slug ?>">
+			Go to custom fields settings
+		</a>
 
 		<?php
 	}
 
 
     /**
-     * Create Contact Form Settings Page
+     * Create Custom Fields Settings Page
      */
     public function create_settings_page() {
     	?>
