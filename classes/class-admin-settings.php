@@ -6,13 +6,6 @@ namespace Bigup\Custom_Fields;
  *
  * Hook into the WP admin area and add menu options and settings
  * pages.
- * 
- * **WARNING**
- * To add multiple sections to the same settings page, all settings registered
- * for that page MUST BE IN THE SAME 'OPTION GROUP'. In the register_setting
- * function call, this is the first argument as follows:
- * 
- * register_setting( 'option_group_name', 'setting_name' );
  *
  * @package bigup_custom_fields
  * @author Jefferson Real <me@jeffersonreal.uk>
@@ -20,6 +13,9 @@ namespace Bigup\Custom_Fields;
  * @license GPL2+
  * @link https://jeffersonreal.uk
  */
+
+// WordPress dependencies.
+use function menu_page_url;
 
 
 class Admin_Settings {
@@ -39,6 +35,9 @@ class Admin_Settings {
 
     /**
      * Settings group name called by settings_fields().
+	 * 
+	 * To add multiple sections to the same settings page, all settings
+	 * registered for that page MUST BE IN THE SAME 'OPTION GROUP'.
      */
     public $group_name = 'group_custom_fields_settings';
 
@@ -56,21 +55,15 @@ class Admin_Settings {
 		add_action( 'bigup_below_parent_settings_page_heading', [ &$this, 'echo_plugin_settings_link' ] );
 		new Admin_Settings_Parent();
         add_action( 'admin_menu', [ &$this, 'register_admin_menu' ], 99 );
-        add_action( 'admin_init', [ &$this, 'register_settings' ] );
+        add_action( 'admin_init', [ &$this, 'do_options' ] );
     }
 
 
     /**
      * Add admin menu option to sidebar
-	 * 
-	 * Calls Parent_Admin_Settings() to ensure a parent menu exists.
      */
     public function register_admin_menu() {
 
-		$parent_menu = menu_page_url( 'bigup-web-settings', false );
-		if ( ! $parent_menu ) error_log( 'Bigup\Custom_Fields Parent settings page not found!' );
-
-		// Add sub menu for this plugin.
         add_submenu_page(
             Admin_Settings_Parent::$page_slug,  //parent_slug
             $this->admin_label . ' Settings',   //page_title
@@ -91,8 +84,9 @@ class Admin_Settings {
 		?>
 
 		<a href="/wp-admin/admin.php?page=<?php echo $this->page_slug ?>">
-			Go to custom fields settings
+			Go to <?php echo $this->admin_label ?> settings
 		</a>
+		<br>
 
 		<?php
 	}
@@ -136,161 +130,88 @@ class Admin_Settings {
     }
 
 
-    /**
-     * Output Form Fields - SMTP Account Settings
-     */
-    public function echo_field_username() {
-        echo '<input type="text" name="username" id="username" value="' . get_option('username') . '" required>';
-    }
-    public function echo_field_password() {
-        echo '<input type="password" name="password" id="password" value="' . get_option('password') . '" required>';
-    }
-    public function echo_field_host() {
-        echo '<input type="text" name="host" id="host" value="' . get_option('host') . '" required>';
-    }
-    public function echo_field_port() {
-        echo '<input type="number" min="1" max="65535" step="1" name="port" id="port" value="' . get_option('port') . '" required>';
-    }
-    public function echo_field_auth() {
-        echo '<input type="checkbox" name="auth" id="auth" value="1"' . checked( '1', get_option('auth'), false ) . '>';
-        echo '<label for="auth">Tick if your SMTP provider requires authentication.</label>';
-    }
+	/**
+	 * Build Options
+	 * 
+	 * Get the json data from options.json and convert to an array before sending to build_options();
+	 */
+	public function do_options() {
+
+		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/options.json' );
+		$options = json_decode( $json, true );
+		$this->build_options( $options );
+	}
 
 
-    /**
-     * Output Form Fields - Message Header Settings
-     */
-    public function echo_intro_section_headers() {
-        echo '<p>These can be set to anything, however, setting <b>sent from</b> to an address that doesn&apos;t match the local domain will cause mail to fail SPF checks, not to mention being a form of forgery.</p>';
-    }
-    public function echo_field_to_email() {
-        echo '<input type="email" name="to_email" id="to_email" value="' . get_option( 'to_email', get_bloginfo( 'admin_email' ) ) . '">';
-    }
-    public function echo_field_from_email() {
-        echo '<input type="email" name="from_email" id="from_email" value="' . get_option( 'from_email', get_bloginfo( 'admin_email' ) ) . '">';
-    }
+	/**
+	 * Build Options
+	 * 
+	 * This function accepts an array of options and builds the settings page.
+	 * 
+	 * **WP Functions**
+	 * add_settings_section( $id, $title, $callback, $page )
+	 * add_settings_field( $id, $title, $callback, $page, $section = 'default', $args = array() )
+	 * register_setting( $option_group, $option_name, $args )
+	 */
+	public function build_options( $options_sections ) {
+		$page  = $this->page_slug;
+		$group = $this->group_name;
+
+		foreach( $options_sections as $section ) {
+			$html = $section[ 'description_html' ];
+			$callback = function() use ( $html ) {
+				if ( null === $html ) return;
+				echo $html;
+			};
+			add_settings_section( $section[ 'id' ], $section[ 'title' ], $callback, $page );
+
+			foreach( $section[ 'options' ] as $option ) {
+				$t = $option[ 'input_type' ];
+				$n = $option[ 'name' ];
+				$r = $option[ 'required' ];
+				$output_callback = function() use ( $t, $n, $r ) {
+					echo "<input type=\"{$t}\" name=\"{$n}\" id=\"{$n}\" value=\"" . get_option( $n ) . "\" {$r}>";
+				};
+				add_settings_field(
+					$option[ 'name' ],
+					$option[ 'label' ],
+					$output_callback,
+					$option[ 'page' ],
+					$section[ 'id' ]
+				);
+				register_setting(
+					$option[ 'group' ],
+					$option[ 'name' ],
+					[
+						'type'              => $option[ 'var_type' ],
+						'description'       => $option[ 'description' ],
+						'sanitize_callback' => $this::sanitize_callback( $option[ 'sanitize_type' ] ),
+						'show_in_rest'      => $option[ 'show_in_rest' ],
+						'default'           => $option[ 'default' ],
+					]
+				);
+			};
+		};
+	}
 
 
-    /**
-     * Output Form Fields - Message Header Settings
-     */
-    public function echo_intro_section_appearance() {
-        echo '<p>These options determine the appearance of your form.</p>';
-    }
-    public function echo_field_styles() {
-        echo '<input type="checkbox" name="styles" id="styles" value="1"' . checked( '1', get_option('styles'), false ) . '>';
-        echo '<label for="styles">Tick to use the fancy dark form theme.</label>';
-    }
+	/**
+	 * Sanitize Callback
+	 * 
+	 * Returns a callback function for sanitizing the option.
+	 */
+	public static function sanitize_callback( $type ) {
+		switch ($type) {
+			case 'text':
+				return [ New Sanitize(), 'text' ];
+				break;
+			case 'email':
+				return [ New Sanitize(), 'email' ];
+				break;
+			default:
+				error_log( 'Bigup Plugin: Invalid sanitize type passed with option' );
+		}
+	}
 
-
-    /**
-     * Register all settings fields and call their functions to build the page.
-     * 
-     * add_settings_section( $id, $title, $callback, $page )
-     * add_settings_field( $id, $title, $callback, $page, $section, $args )
-     * register_setting( $option_group, $option_name, $sanitize_callback )
-     */
-    public function register_settings() {
-
-        $group = $this->group_name;
-        $page = $this->page_slug;
-
-        /**
-         * Register section and fields - SMTP Account Settings
-         */
-        $section = 'section_smtp';
-        add_settings_section( $section, 'SMTP Account', null, $page );
-
-            add_settings_field( 'username', 'Username', [ &$this, 'echo_field_username' ], $page, $section );
-            register_setting( $group, 'username', [ &$this, 'validate_text' ] );
-
-            add_settings_field( 'password', 'Password', [ &$this, 'echo_field_password' ], $page, $section );
-            register_setting( $group, 'password', [ &$this, 'validate_text' ] );
-
-            add_settings_field( 'host', 'Host', [ &$this, 'echo_field_host' ], $page, $section );
-            register_setting( $group, 'host', [ &$this, 'validate_domain' ] );
-
-            add_settings_field( 'port', 'Port', [ &$this, 'echo_field_port' ], $page, $section );
-            register_setting( $group, 'port', [ &$this, 'validate_port' ] );
-
-            add_settings_field( 'auth', 'Authentication', [ &$this, 'echo_field_auth' ], $page, $section );
-            register_setting( $group, 'auth', [ &$this, 'sanitise_checkbox' ] );
-
-        /**
-         * Register section and fields - Message Header Settings
-         */
-        $section = 'section_headers';
-        add_settings_section( $section, 'Message Headers', [ &$this, 'echo_intro_section_headers' ], $page );
-
-            add_settings_field( 'to_email', 'Recipient Email Address', [ &$this, 'echo_field_to_email' ], $page, $section );
-            register_setting( $group, 'to_email', 'sanitize_email' );
-
-            add_settings_field( 'from_email', 'Sent-from Email Address', [ &$this, 'echo_field_from_email' ], $page, $section );
-            register_setting( $group, 'from_email', 'sanitize_email' );
-
-        /**
-         * Register section and fields - Appearance Settings
-         */
-        $section = 'section_appearance';
-        add_settings_section( $section, 'Appearance', [ &$this, 'echo_intro_section_appearance' ], $page );
-
-			add_settings_field( 'styles', 'Fancy Dark Theme', [ &$this, 'echo_field_styles' ], $page, $section );
-			register_setting( $group, 'styles', [ &$this, 'sanitise_checkbox' ] );
-    }
-
-
-    /**
-     * Validate a text field.
-     */
-    function validate_text( $text ) {
- 
-        $clean_text = sanitize_text_field( $text );
-        return $clean_text;
-    }
-
-
-    /**
-     * Validate a domain name.
-     */
-    function validate_domain( $domain ) {
- 
-        $ip = gethostbyname( $domain );
-        $ip = filter_var( $ip, FILTER_VALIDATE_IP );
-
-        if ( $domain == '' || $domain == null ) {
-            return '';
-        } elseif ( $ip ) {
-            return $domain;
-        } else {
-            return 'INVALID DOMAIN';
-        }
-    }
-
-
-    /**
-     * Validate a port number.
-     */
-    function validate_port( $port ) {
-
-        $port = ( is_string( $port ) ) ? (int)$port : $port;
-
-        if ( is_int( $port )
-            && $port >= 1
-            && $port <= 65535 ) {
-            return $port;
-        } else {
-            return '';
-        }
-    }
-
-
-    /**
-     * Validate a checkbox.
-     */
-    function sanitise_checkbox( $checkbox ) {
-
-        $bool_checkbox = (bool)$checkbox;
-        return $bool_checkbox;
-    }
 
 }// Class end

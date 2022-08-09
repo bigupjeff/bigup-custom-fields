@@ -1,0 +1,68 @@
+[
+	{
+		"id":"section_smtp",
+		"title":"SMTP Settings",
+		"description_html":null,
+		"options":[
+			{
+				"name":"username",
+				"label":"Username",
+				"input_type":"text",
+				"required":"required",
+				"sanitize_type":"text",
+				"var_type":"string",
+				"description":"",
+				"show_in_rest":true,
+				"default":null,
+				"page":"bigup-web-custom-fields",
+				"group":"group_custom_fields_settings"
+			},
+			{
+				"name":"password",
+				"label":"Password",
+				"input_type":"text",
+				"required":"required",
+				"sanitize_type":"text",
+				"var_type":"string",
+				"description":"",
+				"show_in_rest":true,
+				"default":null,
+				"page":"bigup-web-custom-fields",
+				"group":"group_custom_fields_settings"
+			}
+		]
+	},
+	{
+		"id":"section_headers",
+		"title":"Email Headers",
+		"description_html":"<p>These can be set to anything, however, setting <b>sent from&lt;\/b&gt; to an address that doesn't match the local domain will cause mail to fail SPF checks, not to mention being a form of forgery.&lt;\/p&gt;",
+		"options":[
+			{
+				"name":"to_email",
+				"label":"Recipient Email Address",
+				"input_type":"email",
+				"required":"",
+				"sanitize_type":"email",
+				"var_type":"string",
+				"description":"",
+				"show_in_rest":true,
+				"default":null,
+				"page":"bigup-web-custom-fields",
+				"group":"group_custom_fields_settings"
+			},
+			{
+				"name":"from_email",
+				"label":"Sent-from Email Address",
+				"input_type":"email",
+				"required":"",
+				"sanitize_type":"email",
+				"var_type":"string",
+				"description":"",
+				"show_in_rest":true,
+				"default":null,
+				"page":"bigup-web-custom-fields",
+				"group":"group_custom_fields_settings"
+			}
+		]
+	}
+]

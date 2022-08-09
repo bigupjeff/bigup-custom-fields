@@ -47,6 +47,6 @@ spl_autoload_register( function( $class ) {
     if ( file_exists( $class_filepath ) ) {
         include_once $class_filepath;
     } else {
-        echo '<script>console.log("ERROR: Bigup_Contact_Form php autoload | Class not found: ' . $classname . '");</script>';
+        echo '<script>console.log("ERROR: Bigup Plugin PHP autoloader | Class not found: ' . $classname . '");</script>';
     }
 });

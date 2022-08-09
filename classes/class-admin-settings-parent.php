@@ -8,13 +8,6 @@ namespace Bigup\Custom_Fields;
  * if not, create it. A hook is created for child pages to add to this parent.
  * This class should be used accross all Bigup plugins and themes.
  * 
- * **WARNING**
- * To add multiple sections to the same settings page, all settings registered
- * for that page MUST BE IN THE SAME 'OPTION GROUP'. In the register_setting
- * function call, this is the first argument as follows:
- * 
- * register_setting( 'option_group_name', 'setting_name' );
- *
  * @package bigup_custom_fields
  * @author Jefferson Real <me@jeffersonreal.uk>
  * @copyright Copyright (c) 2021, Jefferson Real
@@ -60,7 +53,7 @@ class Admin_Settings_Parent {
     public function register_admin_menu() {
 
 		// Add Bigup Web parent menu, if it doesn't exist.
-		$parent_menu = menu_page_url( 'bigup-web-settings', false );
+		$parent_menu = menu_page_url( self::$page_slug, false );
 		if ( false === !! $parent_menu ) {
 			add_menu_page(
 				$this->admin_label . ' Settings', //page_title
@@ -74,7 +67,7 @@ class Admin_Settings_Parent {
 		}
     }
 
-	
+
     /**
      * Do Action Hook
      */
