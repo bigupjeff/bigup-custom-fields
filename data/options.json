@@ -20,7 +20,7 @@
 			{
 				"name":"password",
 				"label":"Password",
-				"input_type":"text",
+				"input_type":"password",
 				"required":"required",
 				"sanitize_type":"text",
 				"var_type":"string",
@@ -35,7 +35,7 @@
 	{
 		"id":"section_headers",
 		"title":"Email Headers",
-		"description_html":"<p>These can be set to anything, however, setting <b>sent from&lt;\/b&gt; to an address that doesn't match the local domain will cause mail to fail SPF checks, not to mention being a form of forgery.&lt;\/p&gt;",
+		"description_html":"<p>These can be set to anything</p>",
 		"options":[
 			{
 				"name":"to_email",

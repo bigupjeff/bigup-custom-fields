@@ -41,6 +41,11 @@ class Admin_Settings {
      */
     public $group_name = 'group_custom_fields_settings';
 
+    /**
+     * Holds the WP_Post object for the add_meta_boxes callback.
+     */
+	public $post_obj = '';
+
 
     /**
      * base64 uri svg icon used next to page title.
@@ -56,6 +61,7 @@ class Admin_Settings {
 		new Admin_Settings_Parent();
         add_action( 'admin_menu', [ &$this, 'register_admin_menu' ], 99 );
         add_action( 'admin_init', [ &$this, 'do_options' ] );
+		add_action( 'updated_option', [ &$this, 'process_custom_fields' ] );
     }
 
 
@@ -112,6 +118,7 @@ class Admin_Settings {
             <form method="post" action="options.php">
 
                 <?php
+
                     /* Setup hidden input functionality */
                     settings_fields( $this->group_name );
 
@@ -136,10 +143,80 @@ class Admin_Settings {
 	 * Get the json data from options.json and convert to an array before sending to build_options();
 	 */
 	public function do_options() {
-
+		$this->build_plugin_options();
 		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/options.json' );
 		$options = json_decode( $json, true );
 		$this->build_options( $options );
+	}
+
+
+	/**
+	 * Build Plugin Page Options
+	 * 
+	 * Create the options for the plugin page.
+	 */
+	public function build_plugin_options() {
+
+		$option = [
+			'name'          => 'target_page',
+			'label'         => 'Target Page',
+			'sanitize_type' => 'number',
+			'var_type'      => 'integer',
+			'description'   => '',
+			'show_in_rest'  => true,
+			'default'       => null,
+			'page'          => 'bigup-web-custom-fields',
+			'group'         => 'group_custom_fields_settings'
+		];
+
+		$page_id = get_option( $option[ 'name' ] );
+		$page_id = ( ! $page_id ) ? 0 : $page_id;
+
+		$dropdown_markup = wp_dropdown_pages( [
+			'depth'                 => 0,                 // Max depth.
+			'child_of'              => 0,                 // Page ID to retrieve children of.
+			'selected'              => $page_id,          // Value of the default option.
+			'echo'                  => 0,                 // Whether to echo or return.
+			'name'                  => $option[ 'name' ], // 'name' attribute.
+			'id'			        => '',                // 'id' attribute.
+			'class'                 => '',                // 'class' attribute.
+			'show_option_none'      => 'Select page',     // Text when none selected.
+			'show_option_no_change' => '',                // Text to show if "no change".
+			'option_none_value'     => '',                // Value when no page selected.
+			'value_field'           => 'ID',              // Post field to populate the 'value' attribute.
+		] );
+
+		$output_callback = function() use ( $dropdown_markup ) {
+			echo $dropdown_markup;
+		};
+
+		$page  = $this->page_slug;
+		$section_id = 'section_page';
+		$section_title = 'Select Page';
+		$html = '<p>Custom fields will be applied to this page.</p>';
+		$callback = function() use ( $html ) {
+			if ( null === $html ) return;
+			echo $html;
+		};
+		add_settings_section( $section_id, $section_title, $callback, $page );
+		add_settings_field(
+			$option[ 'name' ],
+			$option[ 'label' ],
+			$output_callback,
+			$option[ 'page' ],
+			$section_id
+		);
+		register_setting(
+			$option[ 'group' ],
+			$option[ 'name' ],
+			[
+				'type'              => $option[ 'var_type' ],
+				'description'       => $option[ 'description' ],
+				'sanitize_callback' => $this::sanitize_callback( $option[ 'sanitize_type' ] ),
+				'show_in_rest'      => $option[ 'show_in_rest' ],
+				'default'           => $option[ 'default' ],
+			]
+		);
 	}
 
 
@@ -205,11 +282,77 @@ class Admin_Settings {
 			case 'text':
 				return [ New Sanitize(), 'text' ];
 				break;
+			case 'number':
+				return [ New Sanitize(), 'number' ];
+				break;
 			case 'email':
 				return [ New Sanitize(), 'email' ];
 				break;
 			default:
 				error_log( 'Bigup Plugin: Invalid sanitize type passed with option' );
+		}
+	}
+
+
+	/**
+	 * Process Custom Fields
+	 * 
+	 * Fired on admin settings form submit and handles attaching custom fields to the page.
+	 */
+	public function process_custom_fields() {
+		$page_id = get_option( 'target_page' );
+		if ( false === !! $page_id ) return;
+
+		error_log( 'process_custom_fields CALLED!!' );
+		
+		$this->post_obj = get_post( $page_id );
+		$type           = $this->post_obj->post_type;
+
+
+
+// This hook doesn't seem to work.
+
+		add_action(
+			"add_meta_boxes_{$type}",       // Action hook.
+			[ &$this, 'add_custom_fields' ] // Callback function.
+		);
+	}
+
+	public function add_custom_fields() {
+
+		error_log( 'add_custom_fields CALLED!!' );
+
+		$type = $this->post_obj->post_type;
+		$id   = $this->post_obj->ID;
+
+		add_meta_box(
+			'custom_fields_' . $id,              // ID of metabox.
+			'Custom Fields',                     // Title of metabox.
+			[ &$this, 'display_custom_fields' ], // Callback to output content.
+			$type,                               // Post type.
+			'normal',                            // Position on admin page area (See docs).
+			'high'                               // Priority.
+		); 
+	}
+
+	public function display_custom_fields() {
+
+		error_log( 'display_custom_fields CALLED!!' );
+
+
+		$post_id = $_GET['post'] ? $_GET['post'] : $_POST['post_ID'] ;
+		if ( 6 === $post_id ) {
+
+			echo 'HELLO';
+
+			/* Setup hidden input functionality */
+			settings_fields( 'group_custom_fields_settings' );
+
+			/* Print the input fields */
+			do_settings_sections( 'bigup-web-custom-fields' );
+
+			/* Print the submit button */
+			submit_button( 'Save' );
 		}
 	}
 

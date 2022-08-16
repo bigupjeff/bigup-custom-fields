@@ -65,7 +65,7 @@ class Sanitize {
      */
     public static function port( $port ) {
 
-        $port = ( is_string( $port ) ) ? (int)$port : $port;
+        $port = (int)$port;
 
         if ( is_int( $port )
             && $port >= 1
@@ -74,6 +74,16 @@ class Sanitize {
         } else {
             return '';
         }
+    }
+
+
+	/**
+     * Sanitize a number.
+     */
+    public static function number( $number ) {
+
+        $number = (int)$number;
+        return $number;
     }
 
 
