@@ -22,6 +22,43 @@ use sanitize_email;
 class Sanitize {
 
 
+	/**
+	 * Sanitize Callback
+	 * 
+	 * Returns a callback which can be passed as a function call argument.
+	 */
+	public static function get_callback( $type ) {
+		switch ($type) {
+			case 'text':
+				return [ New Sanitize(), 'text' ];
+				break;
+
+			case 'email':
+				return [ New Sanitize(), 'email' ];
+				break;
+
+			case 'domain':
+				return [ New Sanitize(), 'domain' ];
+				break;
+
+			case 'port':
+				return [ New Sanitize(), 'port' ];
+				break;
+
+			case 'number':
+				return [ New Sanitize(), 'number' ];
+				break;
+
+			case 'checkbox':
+				return [ New Sanitize(), 'checkbox' ];
+				break;
+
+			default:
+				error_log( 'Bigup Plugin: Invalid sanitize type passed with option' );
+		}
+	}
+
+
     /**
      * Sanitize a text string.
      */
