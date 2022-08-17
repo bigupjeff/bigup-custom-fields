@@ -40,7 +40,12 @@ class Process_Options {
 					if ( null === $html ) return;
 					echo $html;
 				};
-				add_settings_section( $section[ 'id' ], $section[ 'title' ], $callback, $page_slug );
+				add_settings_section(
+					$section[ 'id' ],    // ID.
+					$section[ 'title' ], // Title.
+					$callback,           // Callback.
+					$page_slug           // Page.
+				);
 
 				foreach( $section[ 'options' ] as $option ) { // Options.
 					$t = $option[ 'input_type' ];
@@ -50,11 +55,11 @@ class Process_Options {
 						echo "<input type=\"{$t}\" name=\"{$n}\" id=\"{$n}\" value=\"" . get_option( $n ) . "\" {$r}>";
 					};
 					add_settings_field(
-						$option[ 'name' ],
-						$option[ 'label' ],
-						$output_callback,
-						$page_slug,
-						$section[ 'id' ]
+						$option[ 'name' ],  // ID.
+						$option[ 'label' ], // Title.
+						$output_callback,   // Callback.
+						$page_slug,         // Page.
+						$section[ 'id' ]    // Section.
 					);
 					register_setting(
 						$group,
@@ -64,6 +69,7 @@ class Process_Options {
 							'description'       => $option[ 'description' ],
 							'sanitize_callback' => Sanitize::get_callback( $option[ 'sanitize_type' ] ),
 							'show_in_rest'      => $option[ 'show_in_rest' ],
+							'show_in_graphql'   => $option[ 'show_in_graphql' ],
 							'default'           => $option[ 'default' ],
 						]
 					);

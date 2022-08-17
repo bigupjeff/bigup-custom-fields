@@ -41,7 +41,7 @@ new Init();
 
 /**
  * If the user is on admin page, process the admin settings menu.
+ * 
+ * Do not register with is_admin(), otherwise options will not show in GraphQL.
  */
-if ( is_admin() ){
-    new Admin_Settings();
-}
+new Admin_Settings();

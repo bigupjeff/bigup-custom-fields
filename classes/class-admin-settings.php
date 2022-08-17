@@ -23,6 +23,8 @@ namespace Bigup\Custom_Fields;
 
 // WordPress dependencies.
 use function menu_page_url;
+// Include for access to function add_settings_section() before admin_init to support GraphQL.
+require_once ABSPATH . 'wp-admin/includes/template.php';
 
 
 class Admin_Settings {
@@ -50,12 +52,14 @@ class Admin_Settings {
 
     /**
      * Init the class by hooking into the admin interface.
+	 * 
+	 * do_options() is hooked in  to 'init' instead of 'admin_init' to support GraphQL.
      */
     public function __construct() {
 		add_action( 'bigup_below_parent_settings_page_heading', [ &$this, 'echo_plugin_settings_link' ] );
 		new Admin_Settings_Parent();
         add_action( 'admin_menu', [ &$this, 'register_admin_menu' ], 99 );
-        add_action( 'admin_init', [ &$this, 'do_options' ] );
+        add_action( 'init', [ &$this, 'do_options' ] );
 		add_action( 'updated_option', [ &$this, 'process_custom_fields' ] );
     }
 
@@ -152,15 +156,16 @@ class Admin_Settings {
 	public function build_plugin_options() {
 
 		$option = [
-			'name'          => 'target_page',
-			'label'         => 'Target Page',
-			'sanitize_type' => 'number',
-			'var_type'      => 'integer',
-			'description'   => '',
-			'show_in_rest'  => true,
-			'default'       => null,
-			'page'          => 'bigup-web-custom-fields',
-			'group'         => 'group_custom_fields_settings'
+			'name'            => 'target_page',
+			'label'           => 'Target Page',
+			'sanitize_type'   => 'number',
+			'var_type'        => 'integer',
+			'description'     => '',
+			'show_in_rest'    => true,
+			'show_in_graphql' => true,
+			'default'         => null,
+			'page'            => 'bigup-web-custom-fields',
+			'group'           => 'bigup-custom-fields'
 		];
 
 		$page_id = get_option( $option[ 'name' ] );
@@ -192,7 +197,12 @@ class Admin_Settings {
 			if ( null === $html ) return;
 			echo $html;
 		};
-		add_settings_section( $section_id, $section_title, $callback, $page );
+		add_settings_section(
+			$section_id,
+			$section_title,
+			$callback,
+			$page
+		);
 		add_settings_field(
 			$option[ 'name' ],
 			$option[ 'label' ],
@@ -209,6 +219,7 @@ class Admin_Settings {
 				//'sanitize_callback' => Sanitize::get_callback( $option[ 'sanitize_type' ] ),
 				'sanitize_callback' => [ New Sanitize(), 'number' ],
 				'show_in_rest'      => $option[ 'show_in_rest' ],
+				'show_in_graphql'   => $option[ 'show_in_graphql' ],
 				'default'           => $option[ 'default' ],
 			]
 		);
