@@ -101,34 +101,58 @@ class Admin_Settings {
      * Create Custom Fields Settings Page
      */
     public function create_settings_page() {
+
+		//Get the active tab from the $_GET param
+		$default_tab = null;
+		$tab         = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
+		$slug        = $this->page_slug;
     	?>
 
 		<div class="wrap">
 
 			<h1>
 				<span class="dashicons-bigup-logo" style="font-size: 2em; margin-right: 0.2em;"></span>
-				Bigup Web Custom Fields Settings
+				<?php echo esc_html( get_admin_page_title() ); ?>
 			</h1>
 
 			<p>
 				This page will be home to the custom fields settings
 			</p>
 
-            <form method="post" action="options.php">
+			<nav class="nav-tab-wrapper">
+				<a
+					href="?page=<?php echo $slug ?>"
+					class="nav-tab <?php if( $tab === null ):?>nav-tab-active<?php endif; ?>"
+				>
+					Default Tab
+				</a>
+				<a
+					href="?page=<?php echo $slug ?>&tab=custom-post-types"
+					class="nav-tab <?php if( $tab === 'custom-post-types' ):?>nav-tab-active<?php endif; ?>"
+				>
+					Custom Post Types
+				</a>
+				<a
+					href="?page=<?php echo $slug ?>&tab=custom-fields"
+					class="nav-tab <?php if( $tab === 'custom-fields' ):?>nav-tab-active<?php endif; ?>"
+				>
+					Custom Fields
+				</a>
+			</nav>
 
-                <?php
-
-                    /* Setup hidden input functionality */
-                    settings_fields( $this->group_name );
-
-                    /* Print the input fields */
-                    do_settings_sections( $this->page_slug );
-
-                    /* Print the submit button */
-                    submit_button( 'Save' );
-                ?>
-
-            </form>
+			<div class="tab-content">
+			<?php switch($tab) :
+			case 'custom-post-types':
+				require BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'templates/custom-post-types-tab.php';
+				break;
+			case 'custom-fields':
+				require BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'templates/custom-fields-tab.php';
+				break;
+			default:
+				require BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'templates/default-tab.php';
+				break;
+			endswitch; ?>
+			</div>
 
         </div>
 
