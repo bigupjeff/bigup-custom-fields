@@ -48,14 +48,16 @@ class Process_Options {
 				);
 
 				foreach( $section[ 'options' ] as $option ) { // Options.
-					$t = $option[ 'input_type' ];
-					$n = $option[ 'name' ];
-					$r = $option[ 'required' ];
-					$output_callback = function() use ( $t, $n, $r ) {
-						echo "<input type=\"{$t}\" name=\"{$n}\" id=\"{$n}\" value=\"" . get_option( $n ) . "\" {$r}>";
+					$id   = $option[ 'id' ];
+					$args = $option[ 'input_args' ];
+
+error_log( Get_Input::markup( $id, $args ) );
+
+					$output_callback = function() use ( $id, $args ) {
+						echo Get_Input::markup( $id, $args );
 					};
 					add_settings_field(
-						$option[ 'name' ],  // ID.
+						$option[ 'id' ],  // ID.
 						$option[ 'label' ], // Title.
 						$output_callback,   // Callback.
 						$page_slug,         // Page.
@@ -63,7 +65,7 @@ class Process_Options {
 					);
 					register_setting(
 						$group,
-						$option[ 'name' ],
+						$option[ 'id' ],
 						[
 							'type'              => $option[ 'var_type' ],
 							'description'       => $option[ 'description' ],

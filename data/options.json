@@ -10,28 +10,32 @@
                     "description_html": null,
                     "options": [
                         {
-                            "name": "textfield",
+                            "id": "textfield",
                             "label": "Text Field",
-                            "input_type": "text",
-                            "required": "required",
                             "sanitize_type": "text",
                             "var_type": "string",
                             "description": "",
                             "show_in_rest": true,
                             "show_in_graphql": true,
-                            "default": null
+                            "default": null,
+							"input_args": {
+								"input_type": "text",
+								"required": "required"
+							}
                         },
                         {
-                            "name": "textfield2",
+                            "id": "textfield2",
                             "label": "Password Text Field",
-                            "input_type": "password",
-                            "required": "required",
                             "sanitize_type": "text",
                             "var_type": "string",
                             "description": "",
                             "show_in_rest": true,
                             "show_in_graphql": true,
-                            "default": null
+                            "default": null,
+							"input_args": {
+								"input_type": "password",
+								"required": "required"
+							}
                         }
                     ]
                 },
@@ -41,28 +45,32 @@
                     "description_html": "<p>These can be set to anything</p>",
                     "options": [
                         {
-                            "name": "emailaddress",
+                            "id": "emailaddress",
                             "label": "Email Address",
-                            "input_type": "email",
-                            "required": "",
                             "sanitize_type": "email",
                             "var_type": "string",
                             "description": "",
                             "show_in_rest": true,
                             "show_in_graphql": true,
-                            "default": null
+                            "default": null,
+							"input_args": {
+								"input_type": "email",
+								"required": ""
+							}
                         },
                         {
-                            "name": "emailaddress2",
+                            "id": "emailaddress2",
                             "label": "Second Email Address",
-                            "input_type": "email",
-                            "required": "",
                             "sanitize_type": "email",
                             "var_type": "string",
                             "description": "",
                             "show_in_rest": true,
                             "show_in_graphql": true,
-                            "default": null
+                            "default": null,
+							"input_args": {
+								"input_type": "email",
+								"required": ""
+							}
                         }
                     ]
                 }
