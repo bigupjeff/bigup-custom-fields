@@ -1,0 +1,23 @@
+{
+	"post_type":"service",
+	"args": {
+		"has_archive": true,
+		"public": true,
+		"show_in_menu": true,
+		"menu_position": 6,
+		"menu_icon": "dashicons-screenoptions",
+		"hierarchical": false,
+		"taxonomies": ["category"],
+		"show_in_rest": true,
+		"delete_with_user": false,
+		"labels": {
+			"name": "Salon Services",
+			"singular_name": "Service"
+		},
+		"supports": ["title", "editor"],
+		"rewrite": {
+			"slug": "services",
+			"with_front": "false"
+		}
+	}
+}

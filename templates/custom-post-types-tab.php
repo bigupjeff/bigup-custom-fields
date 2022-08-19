@@ -1,6 +1,8 @@
 <?php ?>
 
-<h2>Custom Post Types</h2>
+<h2 class="wp-heading-inline">Custom Post Types</h2>
+
+<a href="http://192.168.1.92:8001/wp-admin/post-new.php?post_type=page" class="page-title-action">Add New</a>
 
 <table class="wp-list-table widefat fixed striped table-view-list pages">
 	<thead>

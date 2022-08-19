@@ -30,21 +30,36 @@ class Init {
 		/**
 		 * Enqueue admin scripts and styles.
 		 */
-		add_action( 'admin_enqueue_scripts', [ $this, 'register_admin_scripts_and_styles' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts_and_styles' ] );
 
     }
 
 
 	/**
-	 * Register admin scripts and styles.
+	 * Register and enqueue admin scripts and styles.
 	 */
-	public function register_admin_scripts_and_styles() {
+	public function admin_scripts_and_styles() {
 		if ( ! wp_script_is( 'bigup_icons', 'registered' ) ) {
-			wp_register_style( 'bigup_icons', BIGUP_CUSTOM_FIELDS_PLUGIN_URL . 'dashicons/css/bigup-icons.css', array(), filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'dashicons/css/bigup-icons.css' ), 'all' );
+			wp_register_style(
+				'bigup_icons',
+				BIGUP_CUSTOM_FIELDS_PLUGIN_URL . 'dashicons/css/bigup-icons.css',
+				array(),
+				filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'dashicons/css/bigup-icons.css' ),
+				'all'
+			);
 		}
 		if ( ! wp_script_is( 'bigup_icons', 'enqueued' ) ) {
 			wp_enqueue_style( 'bigup_icons' );
 		}
+
+		wp_enqueue_style(
+			'bigup_custom_fields_admin_css',
+			BIGUP_CUSTOM_FIELDS_PLUGIN_URL . 'css/admin.css',
+			array(),
+			filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'css/admin.css' ),
+			'all'
+		);
+
 	}
 
 }// Class end

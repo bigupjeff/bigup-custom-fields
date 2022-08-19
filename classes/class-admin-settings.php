@@ -259,7 +259,7 @@ class Admin_Settings {
 		$page_id = get_option( 'target_page' );
 		if ( false === !! $page_id ) return;
 
-		error_log( 'process_custom_fields CALLED!!' );
+		//error_log( 'process_custom_fields CALLED!!' );
 		
 		$this->post_obj = get_post( $page_id );
 		$type           = $this->post_obj->post_type;

@@ -53,6 +53,10 @@ class Sanitize {
 				return [ New Sanitize(), 'checkbox' ];
 				break;
 
+			case 'key':
+				return [ New Sanitize(), 'key' ];
+				break;
+
 			default:
 				error_log( 'Bigup Plugin: Invalid sanitize type passed with option' );
 		}
@@ -119,8 +123,8 @@ class Sanitize {
      */
     public static function number( $number ) {
 
-        $number = (int)$number;
-        return $number;
+        $clean_number = (int)$number;
+        return $clean_number;
     }
 
 
@@ -131,6 +135,16 @@ class Sanitize {
 
         $bool_checkbox = (bool)$checkbox;
         return $bool_checkbox;
+    }
+
+
+	/**
+     * Sanitize a WP key.
+     */
+    public static function key( $key ) {
+
+        $clean_key = sanitize_key( $key );
+        return $clean_key;
     }
 
 
