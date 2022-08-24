@@ -30,5 +30,11 @@ E.g. Hooks used to register options should use 'init' NOT 'admin_init'.
 `add_action( 'init', [ &$this, 'do_options' ] );`
 
 https://www.wpbeginner.com/wp-tutorials/how-to-create-custom-post-types-in-wordpress/
+
 https://developer.wordpress.org/reference/functions/register_post_type/#taxonomies
-https://themergency.com/dashicon-picker-jquery-plugin.html
+
+##### TABS
+https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
+
+##### MULTIPLE FORMS ON PAGE
+http://www.mendoweb.be/blog/wordpress-settings-api-multiple-forms-on-same-page/

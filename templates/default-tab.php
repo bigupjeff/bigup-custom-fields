@@ -9,6 +9,9 @@
 
 	<?php
 
+	/* Output a div for each settings retrieval error */
+	settings_errors();
+
 	/* Setup hidden input functionality */
 	settings_fields( $keys->group_name );
 

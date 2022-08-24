@@ -18,10 +18,8 @@
                             "show_in_rest": true,
                             "show_in_graphql": true,
                             "default": null,
-							"input_args": {
-								"input_type": "text",
-								"required": "required"
-							}
+							"input_type": "text",
+							"required": "required"
                         },
                         {
                             "id": "textfield2",
@@ -32,10 +30,8 @@
                             "show_in_rest": true,
                             "show_in_graphql": true,
                             "default": null,
-							"input_args": {
-								"input_type": "password",
-								"required": "required"
-							}
+							"input_type": "password",
+							"required": "required"
                         }
                     ]
                 },
@@ -53,10 +49,8 @@
                             "show_in_rest": true,
                             "show_in_graphql": true,
                             "default": null,
-							"input_args": {
-								"input_type": "email",
-								"required": ""
-							}
+							"input_type": "email",
+							"required": ""
                         },
                         {
                             "id": "emailaddress2",
@@ -67,10 +61,8 @@
                             "show_in_rest": true,
                             "show_in_graphql": true,
                             "default": null,
-							"input_args": {
-								"input_type": "email",
-								"required": ""
-							}
+							"input_type": "email",
+							"required": ""
                         }
                     ]
                 }

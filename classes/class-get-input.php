@@ -8,57 +8,57 @@ namespace Bigup\Custom_Fields;
  *
  * @package bigup_custom_fields
  * @author Jefferson Real <me@jeffersonreal.uk>
- * @copyright Copyright (c) 2021, Jefferson Real
+ * @copyright Copyright (c) 2022, Jefferson Real
  * @license GPL2+
  * @link https://jeffersonreal.uk
  */
 
 class Get_Input {
 
-	public static function markup( $id, $args ) {
+	public static function markup( $option, $value ) {
 
-		switch ( $args[ 'input_type' ] ) {
+		switch ( $option[ 'input_type' ] ) {
 
 			case 'text':
-				return printf(
+				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" %s>',
-					$args[ 'input_type' ],
-					$id,
-					$id,
-					get_option( $id ),
-					$args[ 'required' ]
+					$option[ 'input_type' ],
+					$option[ 'id' ],
+					$option[ 'id' ],
+					get_option( $option[ 'id' ] ),
+					$option[ 'required' ]
 				);
 				break;
 
 			case 'textarea':
-				return printf(
+				return sprintf(
 					'<textarea name="%s" id="%s" %s>%s</textarea>',
-					$id,
-					$id,
-					$args[ 'required' ],
-					get_option( $id )
+					$option[ 'id' ],
+					$option[ 'id' ],
+					$option[ 'required' ],
+					get_option( $option[ 'id' ] )
 				);
 				break;
 
 			case 'password':
-				return printf(
+				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" %s>',
-					$args[ 'input_type' ],
-					$id,
-					$id,
-					get_option( $id ),
-					$args[ 'required' ]
+					$option[ 'input_type' ],
+					$option[ 'id' ],
+					$option[ 'id' ],
+					get_option( $option[ 'id' ] ),
+					$option[ 'required' ]
 				);
 				break;
 
 			case 'email':
-				return printf(
+				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" %s>',
-					$args[ 'input_type' ],
-					$id,
-					$id,
-					get_option( $id ),
-					$args[ 'required' ]
+					$option[ 'input_type' ],
+					$option[ 'id' ],
+					$option[ 'id' ],
+					get_option( $option[ 'id' ] ),
+					$option[ 'required' ]
 				);
 				break;
 

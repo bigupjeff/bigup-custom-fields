@@ -9,12 +9,17 @@
 		"hierarchical": false,
 		"taxonomies": ["category"],
 		"show_in_rest": true,
-		"delete_with_user": false,
+		"show_in_graphql": true,
 		"labels": {
-			"name": "Salon Services",
+			"name": "Services",
 			"singular_name": "Service"
 		},
-		"supports": ["title", "editor"],
+		"graphql_labels": {
+			"graphql_single_name": "Service",
+			"graphql_plural_name": "Services"
+		},
+		"delete_with_user": false,
+		"supports": [ "title", "editor", "author", "thumbnail", "excerpt", "trackbacks", "custom-fields", "comments", "revisions", "page-attributes", "post-formats" ],
 		"rewrite": {
 			"slug": "services",
 			"with_front": "false"

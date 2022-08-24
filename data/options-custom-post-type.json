@@ -1,67 +1,153 @@
 {
-    "id": "section_first",
-    "title": "First Section Settings",
-    "description_html": null,
-    "options": [
-        {
-            "name": "post_type",
-            "label": "Post Type Key",
-            "input_type": "text",
-			"length_limit": 20,
-            "required": "required",
-            "sanitize_type": "key",
-            "var_type": "string",
-            "default": "my-post"
-        },
+	"slug": "bigup-custom-fields-custom-post-type",
+	"group": "bigup-custom-fields-custom-post-type",
+	"serialize": true,
+	"sections": [
 		{
-            "name": "has_archive",
-            "label": "Enable Archive",
-            "input_type": "checkbox",
-            "required": "required",
-            "sanitize_type": "checkbox",
-            "var_type": "boolean",
-            "default": true
-        },
-		{
-            "name": "public",
-            "label": "Public",
-            "input_type": "checkbox",
-            "required": "required",
-            "sanitize_type": "checkbox",
-            "var_type": "boolean",
-            "default": true
-        },
-		{
-            "name": "show_in_menu",
-            "label": "Show in Menu",
-            "input_type": "checkbox",
-            "required": "required",
-            "sanitize_type": "checkbox",
-            "var_type": "boolean",
-            "default": true
-        },
-		{
-            "name": "menu_position",
-            "label": "Menu Position",
-            "input_type": "number",
-			"number-min": 0,
-			"number-max": 0,
-            "required": "required",
-            "sanitize_type": "number",
-            "var_type": "integer",
-            "default": 5
-        },
-		{
-            "name": "menu_icon",
-            "label": "Menu Icon",
-            "input_type": "number",
-			"number-min": 0,
-			"number-max": 0,
-            "required": "required",
-            "sanitize_type": "number",
-            "var_type": "integer",
-            "default": 5
-        },
-
-    ]
+			"id": "section_custom_post",
+			"title": "Custom Post Settings",
+			"description_html": null,
+			"options": [
+				{
+					"id": "post_type",
+					"label": "Post Type Key",
+					"input_type": "text",
+					"length_limit": 20,
+					"required": "required",
+					"sanitize_type": "key",
+					"var_type": "string",
+					"description": "",
+					"default": "my-post"
+				},
+				{
+					"id": "has_archive",
+					"label": "Enable Archive",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": true
+				},
+				{
+					"id": "public",
+					"label": "Public",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": true
+				},
+				{
+					"id": "show_in_menu",
+					"label": "Show in Menu",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": true
+				},
+				{
+					"id": "menu_position",
+					"label": "Menu Position",
+					"input_type": "number",
+					"number-min": 0,
+					"number-max": 0,
+					"required": "required",
+					"sanitize_type": "number",
+					"var_type": "integer",
+					"description": "",
+					"default": 5
+				},
+				{
+					"id": "menu_icon",
+					"label": "Menu Icon",
+					"input_type": "select",
+					"select_type": "dashicons",
+					"select_multi": "",
+					"required": "",
+					"sanitize_type": "key",
+					"var_type": "string",
+					"description": "",
+					"default": "dashicons-screenoptions"
+				},
+				{
+					"id": "hierarchical",
+					"label": "Hierarchical",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": true
+				},
+				{
+					"id": "taxonomies",
+					"label": "Taxonomies",
+					"input_type": "select",
+					"select_type": "taxonomies",
+					"select_multi": "multiple",
+					"required": "",
+					"sanitize_type": [ "string" ],
+					"var_type": "array",
+					"description": "",
+					"default": [ "category" ]
+				},
+				{
+					"id": "show_in_rest",
+					"label": "Show in REST API",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": true
+				},
+				{
+					"id": "show_in_graphql",
+					"label": "Show in GraphQL API",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": true
+				},
+				{
+					"id": "name_plural",
+					"label": "Plural Name",
+					"input_type": "text",
+					"length_limit": 30,
+					"required": "required",
+					"sanitize_type": "text",
+					"var_type": "string",
+					"description": "",
+					"default": "My Posts"
+				},
+				{
+					"id": "name_singular",
+					"label": "Singular Name",
+					"input_type": "text",
+					"length_limit": 30,
+					"required": "required",
+					"sanitize_type": "text",
+					"var_type": "string",
+					"description": "",
+					"default": "My Post"
+				},
+				{
+					"id": "delete_with_user",
+					"label": "Delete with User",
+					"input_type": "checkbox",
+					"required": "required",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": false
+				}
+			]
+		}
+	]
 }
