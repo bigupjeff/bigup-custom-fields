@@ -1,7 +1,7 @@
 <?php
 	namespace Bigup\Custom_Fields;
-	$group    = 'bigup-custom-fields-custom-post-type';
-	$slug     = 'bigup-custom-fields-custom-post-type';
+	$group    = 'bigup-custom-fields-custom-post-types';
+	$slug     = 'bigup-custom-fields-custom-post-types';
 ?>
 
 

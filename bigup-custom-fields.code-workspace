@@ -4,5 +4,18 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"phpcs.enable": true,
+		"phpcs.standard": "WordPress",
+		"phpcs.executablePath": "./vendor/bin/phpcs",
+		"phpcs.showWarnings": true,
+		"phpcs.composerJsonPath": "composer.json",
+		"phpcs.errorSeverity": 5,
+		"php.suggest.basic": true,
+		"phpcbf.enable": true,
+		"phpcbf.executablePath": "./vendor/bin/phpcbf",
+		"phpcbf.documentFormattingProvider": true,
+		"phpcbf.onsave": false,
+		"phpcbf.standard": "WordPress"
+	}
 }

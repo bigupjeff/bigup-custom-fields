@@ -1,13 +1,12 @@
 {
-	"slug": "bigup-custom-fields-custom-post-type",
-	"group": "bigup-custom-fields-custom-post-type",
-	"serialize": true,
+	"slug": "bigup-custom-fields-custom-post-types",
+	"group": "bigup-custom-fields-custom-post-types",
 	"sections": [
 		{
 			"id": "section_custom_post",
 			"title": "Custom Post Settings",
 			"description_html": null,
-			"options": [
+			"settings": [
 				{
 					"id": "post_type",
 					"label": "Post Type Key",
@@ -27,7 +26,7 @@
 					"sanitize_type": "checkbox",
 					"var_type": "boolean",
 					"description": "",
-					"default": true
+					"default": false
 				},
 				{
 					"id": "public",
@@ -53,8 +52,9 @@
 					"id": "menu_position",
 					"label": "Menu Position",
 					"input_type": "number",
-					"number-min": 0,
-					"number-max": 0,
+					"number_min": 0,
+					"number_max": 100,
+					"number_step": 1,
 					"required": "required",
 					"sanitize_type": "number",
 					"var_type": "integer",
@@ -93,7 +93,7 @@
 					"sanitize_type": [ "string" ],
 					"var_type": "array",
 					"description": "",
-					"default": [ "category" ]
+					"default": "category"
 				},
 				{
 					"id": "show_in_rest",

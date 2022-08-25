@@ -8,7 +8,7 @@
                     "id": "section_first",
                     "title": "First Section Settings",
                     "description_html": null,
-                    "options": [
+                    "settings": [
                         {
                             "id": "textfield",
                             "label": "Text Field",
@@ -39,7 +39,7 @@
                     "id": "section_second",
                     "title": "Second Section Settings",
                     "description_html": "<p>These can be set to anything</p>",
-                    "options": [
+                    "settings": [
                         {
                             "id": "emailaddress",
                             "label": "Email Address",

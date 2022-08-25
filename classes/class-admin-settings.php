@@ -4,15 +4,7 @@ namespace Bigup\Custom_Fields;
 /**
  * Bigup Custom Fields - Admin Settings.
  *
- * Hook into the WP admin area and add menu options and settings
- * pages.
- * 
- * 
- * ### To retrieve values:
- * Serialized array of all options:
- *  - $tc_settings = get_option( 'tc_theme_array' );
- * Single Option:
- *  - $tc_email_address = $tc_settings['tc_email_address'];
+ * Hook into the WP admin area and add menu settings pages.
  *
  * @package bigup_custom_fields
  * @author Jefferson Real <me@jeffersonreal.uk>
@@ -35,7 +27,7 @@ class Admin_Settings {
 	 * 
      * $admin_label - Menu label for the plugin.
 	 * $page_slug   - page URI where the sub-menu will be.
-	 * $group_name  - Option group ID which is set when registering options for this page.
+	 * $group_name  - Option group ID which is set when registering settings for this page.
 	 * $icon        - SVG Bigup Web icon for the admin menu as a base64 string.
      */
     public $admin_label = 'Custom Fields';
@@ -53,19 +45,19 @@ class Admin_Settings {
     /**
      * Init the class by hooking into the admin interface.
 	 * 
-	 * do_options() is hooked in  to 'init' instead of 'admin_init' to support GraphQL.
+	 * do_settings() is hooked in  to 'init' instead of 'admin_init' to support GraphQL.
      */
     public function __construct() {
 		add_action( 'bigup_below_parent_settings_page_heading', [ &$this, 'echo_plugin_settings_link' ] );
 		new Admin_Settings_Parent();
         add_action( 'admin_menu', [ &$this, 'register_admin_menu' ], 99 );
-        add_action( 'init', [ &$this, 'do_options' ] );
+        add_action( 'init', [ &$this, 'do_settings' ] );
 		add_action( 'updated_option', [ &$this, 'process_custom_fields' ] );
     }
 
 
     /**
-     * Add admin menu option to sidebar
+     * Add admin menu entry to sidebar
      */
     public function register_admin_menu() {
 
@@ -163,29 +155,31 @@ class Admin_Settings {
 	/**
 	 * Build Options
 	 * 
-	 * Get the json data from options.json and convert to an array before sending to build_options();
+	 * Get the json data from settings.json and convert to an array before sending to build_settings();
 	 */
-	public function do_options() {
-		$this->build_plugin_options();
-		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/options.json' );
-		Process_Options::build_from_json( $json );
+	public function do_settings() {
+		$this->build_plugin_settings();
+		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
+		Process_Settings::build_from_json( $json );
 
-		$main_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/options.json' );
-		Process_Options::build_from_json( $main_json );
+		$main_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
+		Process_Settings::build_from_json( $main_json );
 
-		$custom_post_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/options-custom-post-type.json' );
-		Process_Options::build_from_json( $custom_post_json );
+		$custom_post_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
+		$custom_post_values_example_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/example-custom-post.json' );
+		$process_options = new Process_Settings();
+		$process_options->build_custom_post_forms( $custom_post_json, 'service' );
 	}
 
 
 	/**
 	 * Build Plugin Page Options
 	 * 
-	 * Create the options for the plugin page.
+	 * Create the settings for the plugin page.
 	 */
-	public function build_plugin_options() {
+	public function build_plugin_settings() {
 
-		$option = [
+		$setting = [
 			'name'            => 'target_page',
 			'label'           => 'Target Page',
 			'sanitize_type'   => 'number',
@@ -198,21 +192,21 @@ class Admin_Settings {
 			'group'           => 'bigup-custom-fields'
 		];
 
-		$page_id = get_option( $option[ 'name' ] );
+		$page_id = get_option( $setting[ 'name' ] );
 		$page_id = ( ! $page_id ) ? 0 : $page_id;
 
 		$dropdown_markup = wp_dropdown_pages( [
-			'depth'                 => 0,                 // Max depth.
-			'child_of'              => 0,                 // Page ID to retrieve children of.
-			'selected'              => $page_id,          // Value of the default option.
-			'echo'                  => 0,                 // Whether to echo or return.
-			'name'                  => $option[ 'name' ], // 'name' attribute.
-			'id'			        => '',                // 'id' attribute.
-			'class'                 => '',                // 'class' attribute.
-			'show_option_none'      => 'Select page',     // Text when none selected.
-			'show_option_no_change' => '',                // Text to show if "no change".
-			'option_none_value'     => '',                // Value when no page selected.
-			'value_field'           => 'ID',              // Post field to populate the 'value' attribute.
+			'depth'                 => 0,                  // Max depth.
+			'child_of'              => 0,                  // Page ID to retrieve children of.
+			'selected'              => $page_id,           // Value of the default option.
+			'echo'                  => 0,                  // Whether to echo or return.
+			'name'                  => $setting[ 'name' ], // 'name' attribute.
+			'id'			        => '',                 // 'id' attribute.
+			'class'                 => '',                 // 'class' attribute.
+			'show_option_none'      => 'Select page',      // Text when none selected.
+			'show_option_no_change' => '',                 // Text to show if "no change".
+			'option_none_value'     => '',                 // Value when no page selected.
+			'value_field'           => 'ID',               // Post field to populate the 'value' attribute.
 		] );
 
 		$output_callback = function() use ( $dropdown_markup ) {
@@ -234,23 +228,23 @@ class Admin_Settings {
 			$page
 		);
 		add_settings_field(
-			$option[ 'name' ],
-			$option[ 'label' ],
+			$setting[ 'name' ],
+			$setting[ 'label' ],
 			$output_callback,
-			$option[ 'page' ],
+			$setting[ 'page' ],
 			$section_id
 		);
 		register_setting(
-			$option[ 'group' ],
-			$option[ 'name' ],
+			$setting[ 'group' ],
+			$setting[ 'name' ],
 			[
-				'type'              => $option[ 'var_type' ],
-				'description'       => $option[ 'description' ],
-				//'sanitize_callback' => Sanitize::get_callback( $option[ 'sanitize_type' ] ),
+				'type'              => $setting[ 'var_type' ],
+				'description'       => $setting[ 'description' ],
+				//'sanitize_callback' => Sanitize::get_callback( $setting[ 'sanitize_type' ] ),
 				'sanitize_callback' => [ New Sanitize(), 'number' ],
-				'show_in_rest'      => $option[ 'show_in_rest' ],
-				'show_in_graphql'   => $option[ 'show_in_graphql' ],
-				'default'           => $option[ 'default' ],
+				'show_in_rest'      => $setting[ 'show_in_rest' ],
+				'show_in_graphql'   => $setting[ 'show_in_graphql' ],
+				'default'           => $setting[ 'default' ],
 			]
 		);
 	}

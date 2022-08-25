@@ -63,6 +63,47 @@ class Sanitize {
 	}
 
 
+	/**
+	 * Get Sanitized
+	 * 
+	 * Sanitizes and returns a value based on the sanitize type passed.
+	 */
+	public static function get_sanitized( $type, $value ) {
+		switch ($type) {
+			case 'text':
+				return Sanitize::text( $value );
+				break;
+
+			case 'email':
+				return Sanitize::email( $value );
+				break;
+
+			case 'domain':
+				return Sanitize::domain( $value );
+				break;
+
+			case 'port':
+				return Sanitize::port( $value );
+				break;
+
+			case 'number':
+				return Sanitize::number( $value );
+				break;
+
+			case 'checkbox':
+				return Sanitize::checkbox( $value );
+				break;
+
+			case 'key':
+				return Sanitize::key( $value );
+				break;
+
+			default:
+				error_log( 'Bigup Plugin: Invalid sanitize type passed with value' );
+		}
+	}
+
+
     /**
      * Sanitize a text string.
      */

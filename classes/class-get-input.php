@@ -15,53 +15,123 @@ namespace Bigup\Custom_Fields;
 
 class Get_Input {
 
-	public static function markup( $option, $value ) {
-
-		switch ( $option[ 'input_type' ] ) {
+	/**
+ 	 * Return HTML markup for the passed setting object and option value.
+ 	 */
+	public static function markup( $setting, $value ) {
+		switch ( $setting[ 'input_type' ] ) {
 
 			case 'text':
 				return sprintf(
-					'<input type="%s" name="%s" id="%s" value="%s" %s>',
-					$option[ 'input_type' ],
-					$option[ 'id' ],
-					$option[ 'id' ],
-					get_option( $option[ 'id' ] ),
-					$option[ 'required' ]
+					'<input type="%s" name="%s" id="%s" value="%s" required>',
+					$setting[ 'input_type' ],
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					$value,
+					$setting[ 'required' ]
 				);
-				break;
 
 			case 'textarea':
 				return sprintf(
 					'<textarea name="%s" id="%s" %s>%s</textarea>',
-					$option[ 'id' ],
-					$option[ 'id' ],
-					$option[ 'required' ],
-					get_option( $option[ 'id' ] )
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					$setting[ 'required' ],
+					$value
 				);
-				break;
 
 			case 'password':
 				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" %s>',
-					$option[ 'input_type' ],
-					$option[ 'id' ],
-					$option[ 'id' ],
-					get_option( $option[ 'id' ] ),
-					$option[ 'required' ]
+					$setting[ 'input_type' ],
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					$value,
+					$setting[ 'required' ]
 				);
-				break;
 
 			case 'email':
 				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" %s>',
-					$option[ 'input_type' ],
-					$option[ 'id' ],
-					$option[ 'id' ],
-					get_option( $option[ 'id' ] ),
-					$option[ 'required' ]
+					$setting[ 'input_type' ],
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					$value,
+					$setting[ 'required' ]
 				);
-				break;
 
+			case 'number':
+				return sprintf(
+					'<input type="%s" name="%s" id="%s" min="%s" max="%s" step="%s" value="%s" %s>',
+					$setting[ 'input_type' ],
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					$setting[ 'number_min' ],
+					$setting[ 'number_max' ],
+					$setting[ 'number_step' ],
+					$value,
+					$setting[ 'required' ]
+				);
+			
+			case 'checkbox':
+				return sprintf(
+					'<input type="%s" name="%s" id="%s" value="%s" %s>',
+					$setting[ 'input_type' ],
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					1,
+					$s = ( $value ) ? 'checked' : ''
+				);
+
+			case 'select':
+				
+				return sprintf(
+					'<select name="%s" id="%s" value="%s" %s>%s</select>',
+					$setting[ 'id' ],
+					$setting[ 'id' ],
+					$value,
+					$setting[ 'select_multi' ],
+					Get_Input::get_select_data( $setting[ 'select_type' ] )
+				);
+
+			default:
+				return sprintf(
+					'<b>PLUGIN ERROR: No input type "%s" for setting ID "%s"!</b>',
+					$setting[ 'input_type' ],
+					$setting[ 'id' ]
+				);
 		}
 	}
+
+	/**
+	 * Return HTML select options markup for the passed select type.
+	 */
+	public static function get_select_data( $select_type ) {
+
+		$markup = "\n";
+
+		if ( 'taxonomies' === $select_type ) {
+			$markup = $markup . '<option value="" disabled>--</option>' . "\n";
+
+			$all_post_types = get_post_types();
+			$post_taxonomies = get_object_taxonomies( $all_post_types, 'names' );
+			foreach ( $post_taxonomies as $taxonomy ) {
+				$markup = $markup . '<option value="' . $taxonomy . '">' . $taxonomy . '</option>' . "\n";
+			}
+
+		} else {
+			$options_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/select-options-' . $select_type . '.json' );
+
+			if ( false === !! $options_json ) return error_log( 'Bigup Web: get_select_data file not found' );
+
+			$options = json_decode( $options_json, true );
+			foreach( $options as $value => $label ) {
+				$markup = $markup . '<option value="' . $value . '">' . $label . '</option>' . "\n";
+			}
+		}
+
+		return $markup;
+	}
+
+
 }
