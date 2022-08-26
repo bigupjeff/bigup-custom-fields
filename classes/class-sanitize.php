@@ -31,31 +31,24 @@ class Sanitize {
 		switch ($type) {
 			case 'text':
 				return [ New Sanitize(), 'text' ];
-				break;
 
 			case 'email':
 				return [ New Sanitize(), 'email' ];
-				break;
 
 			case 'domain':
 				return [ New Sanitize(), 'domain' ];
-				break;
 
 			case 'port':
 				return [ New Sanitize(), 'port' ];
-				break;
 
 			case 'number':
 				return [ New Sanitize(), 'number' ];
-				break;
 
 			case 'checkbox':
 				return [ New Sanitize(), 'checkbox' ];
-				break;
 
 			case 'key':
 				return [ New Sanitize(), 'key' ];
-				break;
 
 			default:
 				error_log( 'Bigup Plugin: Invalid sanitize type passed with option' );
@@ -72,36 +65,81 @@ class Sanitize {
 		switch ($type) {
 			case 'text':
 				return Sanitize::text( $value );
-				break;
 
 			case 'email':
 				return Sanitize::email( $value );
-				break;
 
 			case 'domain':
 				return Sanitize::domain( $value );
-				break;
 
 			case 'port':
 				return Sanitize::port( $value );
-				break;
 
 			case 'number':
 				return Sanitize::number( $value );
-				break;
 
 			case 'checkbox':
 				return Sanitize::checkbox( $value );
-				break;
 
 			case 'key':
 				return Sanitize::key( $value );
-				break;
+
+			case is_array( $type ):
+				return Sanitize::arr( $type, $value );
 
 			default:
 				error_log( 'Bigup Plugin: Invalid sanitize type passed with value' );
 		}
 	}
+
+
+    /**
+     * Sanitize an array of values.
+	 * 
+	 * This special function accepts a type and a flat array of values, sanitizes each value against
+	 * that type, then returns a clean value array. This function does not account for arrays with
+	 * mixed value types.
+     */
+    public static function arr( $arr_type, $values ) {
+
+		if ( ! isset( $values ) ) {
+			return array();
+		}
+		$clean_values = [];
+		$type = $arr_type[ 0 ];
+
+
+// DEBUGGING
+$sani_values = print_r( $values, true );
+$typeer = gettype( $values );
+add_settings_error(
+	'test',
+	'test',
+	"#################### before foreach {$typeer} - {$sani_values}"
+);
+// DEBUGGING END
+
+$testy = is_array($values) ? 'ya arrayy gut' : 'na not bad no';
+error_log( '################ ' . $testy );
+
+		foreach( $values as $value ) {
+			array_push( $clean_values, get_sanitized( $type, $value ) );
+			error_log( '################ inside foreach: ' . $value );
+		}
+
+
+// DEBUGGING
+$sani_values = print_r( $clean_values, true );
+add_settings_error(
+	'test',
+	'test',
+	"##################### after foreach - {$sani_values}"
+);
+// DEBUGGING END
+
+
+        return $clean_values;
+    }
 
 
     /**
@@ -175,6 +213,7 @@ class Sanitize {
     public static function checkbox( $checkbox ) {
 
         $bool_checkbox = (bool)$checkbox;
+		$bool_checkbox = $bool_checkbox ? 1 : 0 ;
         return $bool_checkbox;
     }
 

@@ -168,7 +168,7 @@ class Admin_Settings {
 		$custom_post_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
 		$custom_post_values_example_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/example-custom-post.json' );
 		$process_options = new Process_Settings();
-		$process_options->build_custom_post_forms( $custom_post_json, 'service' );
+		$process_options->build_custom_post_forms( $custom_post_json, 'eggs' );
 	}
 
 

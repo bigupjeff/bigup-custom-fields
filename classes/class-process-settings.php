@@ -14,10 +14,8 @@ namespace Bigup\Custom_Fields;
  */
 class Process_Settings {
 
-	private $post_type;
-	private $custom_post_args;
 	private $post_settings;
-	private $post_options;
+	private $posts_option;
 
 	/**
 	 * Build Settings
@@ -49,8 +47,8 @@ class Process_Settings {
 				add_settings_section(
 					$section['id'],    // $id.
 					$section['title'], // $title.
-					$callback,           // $callback.
-					$page_slug           // $page.
+					$callback,         // $callback.
+					$page_slug         // $page.
 				);
 
 				foreach ( $section['settings'] as $setting ) { // Options.
@@ -101,33 +99,29 @@ class Process_Settings {
 	 * add_settings_section( $id, $title, $callback, $page )
 	 * add_settings_field( $id, $title, $callback, $page, $section = 'default', $args = array() )
 	 * register_setting( $setting_group, $setting_name, $args )
+	 *
+	 * @param string $settings_json - JSON object formatted settings.
+	 * @param string $post_type     - The post type key (optional).
 	 */
-	public function build_custom_post_forms( $settings_json, $post_type ) {
+	public function build_custom_post_forms( $settings_json, $post_type = null ) {
 
 		$this->post_settings = json_decode( $settings_json, true );
-		$this->post_type     = $post_type;
 		$page_slug           = $this->post_settings['slug'];
 		$group               = $this->post_settings['group'];
-		$this->post_options  = get_option( $group );
+		$options_array_name  = $group . '-options';
+		$this->posts_option  = get_option( $options_array_name );
 
-		if ( isset( $this->post_options[ $this->post_type ] ) ) {
-			$values              = $this->post_options[ $this->post_type ];
-			$values['post_type'] = $this->post_type;
-		} else {
-			$values = array();
-		}
+		$values = isset( $this->posts_option[ $post_type ] ) ? $this->posts_option : array();
 
 		register_setting(
-			$group,                                                           // Option group.
-			$group,                                                           // Option name.
+			$group,                                                // Option group.
+			$options_array_name,                                   // Option name.
 			array(
-				'sanitize_callback' => array( $this, 'scrape_and_sanitize' ), // Sanitize function.
-				'show_in_rest'      => true,                                  // Available to REST?
-				'show_in_graphql'   => true,                                  // Available to GraphQL?
+				'sanitize_callback' => array( $this, 'sanitize' ), // Sanitize function.
+				'show_in_rest'      => true,                       // Available to REST?
+				'show_in_graphql'   => true,                       // Available to GraphQL?
 			)
 		);
-
-		$this->custom_post_args = array();
 
 		foreach ( $this->post_settings['sections'] as $section ) { // Sections.
 			$html     = $section['description_html'];
@@ -137,28 +131,39 @@ class Process_Settings {
 				}
 				echo $html;
 			};
+
 			add_settings_section(
 				$section['id'],    // ID.
 				$section['title'], // Title.
-				$callback,           // Callback.
-				$page_slug           // Page.
+				$callback,         // Callback.
+				$page_slug         // Page.
 			);
 
 			foreach ( $section['settings'] as $setting ) { // Options.
+				$id = $setting['id'];
 
-				array_push( $this->custom_post_args, $setting['id'] );
+				if ( 'post_type' === $id ) {
+					$value = isset( $values[ $post_type ][ $id ] )
+								? $values[ $post_type ]['post_type']
+								: $setting['default'];
+				} else {
+					$value = isset( $values[ $post_type ]['args'][ $id ] )
+								? $values[ $post_type ]['args'][ $id ]
+								: $setting['default'];
+				}
 
-				$value           = isset( $values[ $setting['id'] ] ) ? $values[ $setting['id'] ] : $setting['default'];
-				$output_callback = function() use ( $setting, $value ) {
-					echo Get_Input::markup( $setting, $value );
+				$html_name_attr  = $options_array_name . '[' . $id . ']';
+				$output_callback = function() use ( $setting, $value, $html_name_attr ) {
+					echo Get_Input::markup( $setting, $value, $html_name_attr );
 				};
 				add_settings_field(
-					$setting['id'],    // ID.
+					$id,               // ID.
 					$setting['label'], // Title.
-					$output_callback,    // Callback.
-					$page_slug,          // Page.
+					$output_callback,  // Callback.
+					$page_slug,        // Page.
 					$section['id']     // Section.
 				);
+
 			};
 		};
 	}
@@ -168,73 +173,94 @@ class Process_Settings {
 	 * Scrape and Sanitize Custom Post Form.
 	 *
 	 * $this->post_settings    - An array of form settings objects.
-	 * $this->custom_post_args - An array of form settings IDs to use as keys.
 	 */
-	public function scrape_and_sanitize( $input ) {
+	public function sanitize( $input ) {
 
 
-		// $input is NULL. Check how to scrape input values ready for sanitize and save.
-		var_dump( $input );
+// DEBUGGING
+$select_value = print_r( $input['taxonomies'], true );
+$typeer = gettype( $input['taxonomies'] );
+add_settings_error(
+	$this->post_settings['group'],
+	$this->post_settings['group'],
+	"INPUT_VALUE: {$typeer} - {$default_value} / {$select_value}"
+);
+// DEBUGGING END
+
+
+		if ( ! is_array( $input ) || ! isset( $input ) ) {
+			add_settings_error(
+				$this->post_settings['group'],
+				$this->post_settings['group'],
+				'Bigup Web Error: Unexpected option values recieved. Please report this error to the plugin developer.'
+			);
+			return;
+		}
+
+
+// DEBUGGING
+$old_value = print_r( get_option( $this->post_settings['group'] . '-options' ), true );
+add_settings_error(
+	$this->post_settings['group'],
+	$this->post_settings['group'],
+	"OLD: {$old_value}"
+);
+// DEBUGGING END
 
 
 		$option = array();
 
 		foreach ( $this->post_settings['sections'] as $section ) {
 			foreach ( $section['settings'] as $setting ) {
+				$id = $setting['id'];
 
 				$sanitize_type = $setting['sanitize_type'];
-				$input_value   = $input[ $setting['id'] ];
+				$input_value   = isset( $input[ $id ] ) ? $input[ $id ] : null;
 
-				if ( 'post_type' === $setting['id'] ) {
-					$option[ $setting[ id ] ] = Sanitize::get_sanitized( $sanitize_type, $input_value );
+				if ( isset( $setting['required'] )
+					&& 'required' === $setting['required']
+					&& 'checkbox' !== $setting['input_type']
+					&& ! isset( $input_value ) ) {
+
+					add_settings_error(
+						$id,
+						$id,
+						"{$setting['label']} is a required field. Please complete this field and try again."
+					);
+					return;
+				}
+
+				$sanitized_value = Sanitize::get_sanitized( $sanitize_type, $input_value );
+
+error_log( $setting['id'] . ': ' . print_r( $sanitized_value, true ) );
+
+				if ( 'post_type' === $id ) {
+					$option[ $sanitized_value ][ $id ] = $sanitized_value;
+					$post_type = $sanitized_value;
 				} else {
-					$option['args'][ $setting[ id ] ] = Sanitize::get_sanitized( $sanitize_type, $input_value );
+					$option[ $post_type ]['args'][ $id ] = $sanitized_value;
 				}
 			};
 		};
 
-		printf( $option );
-
-		/*
-		if ( isset( $sanitized[ $post_type ] ) ) {
-
-			$options = [];
-			foreach ( $sanitized as $key => $value ) {
-				if ( 'post_type' === $key ) {
-					$options[ 'post_type' ] = $value;
-				} else {
-					$options[ 'args' ][ $key ] = $value;
-				}
-			}
-
-			$this->post_options[ $this->post_type ] = $options;
-
-		}
-
-
-		printf( $this->post_options );
 
 
 
 
-		return $this->post_options;
-		*/
-		/*
-		 Expected array values.
-			$sanitized[ 'post_type' ]
-			$sanitized[ 'has_archive' ]
-			$sanitized[ 'public' ]
-			$sanitized[ 'show_in_menu' ]
-			$sanitized[ 'menu_position' ]
-			$sanitized[ 'menu_icon' ]
-			$sanitized[ 'hierarchical' ]
-			$sanitized[ 'taxonomies' ]
-			$sanitized[ 'show_in_rest' ]
-			$sanitized[ 'show_in_graphql' ]
-			$sanitized[ 'name_plural' ]
-			$sanitized[ 'name_singular' ]
-			$sanitized[ 'delete_with_user' ]
-		*/
+// DEBUGGING
+$opout = print_r( $option, true );
+add_settings_error(
+	$this->post_settings['group'],
+	$this->post_settings['group'],
+	"NEW: {$opout}"
+);
+// DEBUGGING END
+
+
+		return $option;
+
+
+
 	}
 
 
