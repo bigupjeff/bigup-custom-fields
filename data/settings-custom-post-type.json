@@ -86,7 +86,7 @@
 					"select_type": "taxonomies",
 					"select_multi": "multiple",
 					"required": "",
-					"sanitize_type": [ "string" ],
+					"sanitize_type": [ "text" ],
 					"var_type": "array",
 					"description": "",
 					"default": [ "category" ]

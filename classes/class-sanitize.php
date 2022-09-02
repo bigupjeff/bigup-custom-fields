@@ -62,6 +62,7 @@ class Sanitize {
 	 * Sanitizes and returns a value based on the sanitize type passed.
 	 */
 	public static function get_sanitized( $type, $value ) {
+
 		switch ($type) {
 			case 'text':
 				return Sanitize::text( $value );
@@ -93,139 +94,113 @@ class Sanitize {
 	}
 
 
-    /**
-     * Sanitize an array of values.
+	/**
+	 * Sanitize an array of values.
 	 * 
 	 * This special function accepts a type and a flat array of values, sanitizes each value against
 	 * that type, then returns a clean value array. This function does not account for arrays with
 	 * mixed value types.
-     */
-    public static function arr( $arr_type, $values ) {
+	 */
+	public static function arr( $arr_type, $values ) {
 
 		if ( ! isset( $values ) ) {
 			return array();
 		}
-		$clean_values = [];
+		$clean_values = array();
 		$type = $arr_type[ 0 ];
 
-
-// DEBUGGING
-$sani_values = print_r( $values, true );
-$typeer = gettype( $values );
-add_settings_error(
-	'test',
-	'test',
-	"#################### before foreach {$typeer} - {$sani_values}"
-);
-// DEBUGGING END
-
-$testy = is_array($values) ? 'ya arrayy gut' : 'na not bad no';
-error_log( '################ ' . $testy );
-
 		foreach( $values as $value ) {
-			array_push( $clean_values, get_sanitized( $type, $value ) );
-			error_log( '################ inside foreach: ' . $value );
+			array_push( $clean_values, self::get_sanitized( $type, $value ) );
 		}
 
-
-// DEBUGGING
-$sani_values = print_r( $clean_values, true );
-add_settings_error(
-	'test',
-	'test',
-	"##################### after foreach - {$sani_values}"
-);
-// DEBUGGING END
-
-
-        return $clean_values;
-    }
-
-
-    /**
-     * Sanitize a text string.
-     */
-    public static function text( $text ) {
- 
-        $clean_text = sanitize_text_field( $text );
-        return $clean_text;
-    }
+		return $clean_values;
+	}
 
 
 	/**
-     * Sanitize an email.
-     */
-    public static function email( $email ) {
+	 * Sanitize a text string.
+	 */
+	public static function text( $text ) {
  
-        $clean_email = sanitize_email( $email );
-        return $clean_email;
-    }
-
-
-    /**
-     * Sanitize a domain name.
-     */
-    public static function domain( $domain ) {
- 
-        $ip = gethostbyname( $domain );
-        $ip = filter_var( $ip, FILTER_VALIDATE_IP );
-
-        if ( $domain == '' || $domain == null ) {
-            return '';
-        } elseif ( $ip ) {
-            return $domain;
-        } else {
-            return 'INVALID DOMAIN';
-        }
-    }
-
-
-    /**
-     * Sanitize a port number.
-     */
-    public static function port( $port ) {
-
-        $port = (int)$port;
-
-        if ( is_int( $port )
-            && $port >= 1
-            && $port <= 65535 ) {
-            return $port;
-        } else {
-            return '';
-        }
-    }
+		$clean_text = sanitize_text_field( $text );
+		return $clean_text;
+	}
 
 
 	/**
-     * Sanitize a number.
-     */
-    public static function number( $number ) {
+	 * Sanitize an email.
+	 */
+	public static function email( $email ) {
+ 
+		$clean_email = sanitize_email( $email );
+		return $clean_email;
+	}
 
-        $clean_number = (int)$number;
-        return $clean_number;
-    }
+
+	/**
+	 * Sanitize a domain name.
+	 */
+	public static function domain( $domain ) {
+ 
+		$ip = gethostbyname( $domain );
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( $domain == '' || $domain == null ) {
+			return '';
+		} elseif ( $ip ) {
+			return $domain;
+		} else {
+			return 'INVALID DOMAIN';
+		}
+	}
 
 
-    /**
-     * Sanitize a checkbox.
-     */
-    public static function checkbox( $checkbox ) {
+	/**
+	 * Sanitize a port number.
+	 */
+	public static function port( $port ) {
 
-        $bool_checkbox = (bool)$checkbox;
+		$port = (int)$port;
+
+		if ( is_int( $port )
+			&& $port >= 1
+			&& $port <= 65535 ) {
+			return $port;
+		} else {
+			return '';
+		}
+	}
+
+
+	/**
+	 * Sanitize a number.
+	 */
+	public static function number( $number ) {
+
+		$clean_number = (int)$number;
+		return $clean_number;
+	}
+
+
+	/**
+	 * Sanitize a checkbox.
+	 */
+	public static function checkbox( $checkbox ) {
+
+		$bool_checkbox = (bool)$checkbox;
 		$bool_checkbox = $bool_checkbox ? 1 : 0 ;
-        return $bool_checkbox;
-    }
+		return $bool_checkbox;
+	}
 
 
 	/**
-     * Sanitize a WP key.
-     */
-    public static function key( $key ) {
+	 * Sanitize a WP key.
+	 */
+	public static function key( $key ) {
 
-        $clean_key = sanitize_key( $key );
-        return $clean_key;
-    }
+		$clean_key = sanitize_key( $key );
+		return $clean_key;
+	}
 
 
 }// Class end

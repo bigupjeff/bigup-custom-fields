@@ -75,7 +75,7 @@ class Get_Input {
 					$value,
 					$setting[ 'required' ]
 				);
-			
+
 			case 'checkbox':
 				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" %s>',
@@ -87,7 +87,6 @@ class Get_Input {
 				);
 
 			case 'select':
-
 				return sprintf(
 					'<select name="%s" id="%s" %s>%s</select>',
 					$name,
@@ -137,7 +136,7 @@ class Get_Input {
 			$selected_options = is_string( $selected_options ) ? $selected_options : '';
 
 			foreach ( $options as $value => $label ) {
-				$selected = ( $selected_options === $value ) ? 'selected' : '';
+				$selected = ( $selected_options === $value ) ? ' selected' : '';
 				$markup   = $markup . '<option value="' . $value . '"' . $selected . '>' . $label . '</option>' . "\n";
 			}
 		}

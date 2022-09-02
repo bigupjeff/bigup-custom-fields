@@ -152,7 +152,13 @@ class Process_Settings {
 								: $setting['default'];
 				}
 
-				$html_name_attr  = $options_array_name . '[' . $id . ']';
+
+				if ( 'select' === $setting['input_type']
+				&& true === !! $setting['select_multi'] ) {
+					$html_name_attr  = $options_array_name . '[' . $id . '][]';
+				} else {
+					$html_name_attr  = $options_array_name . '[' . $id . ']';
+				}
 				$output_callback = function() use ( $setting, $value, $html_name_attr ) {
 					echo Get_Input::markup( $setting, $value, $html_name_attr );
 				};
@@ -176,18 +182,6 @@ class Process_Settings {
 	 */
 	public function sanitize( $input ) {
 
-
-// DEBUGGING
-$select_value = print_r( $input['taxonomies'], true );
-$typeer = gettype( $input['taxonomies'] );
-add_settings_error(
-	$this->post_settings['group'],
-	$this->post_settings['group'],
-	"INPUT_VALUE: {$typeer} - {$default_value} / {$select_value}"
-);
-// DEBUGGING END
-
-
 		if ( ! is_array( $input ) || ! isset( $input ) ) {
 			add_settings_error(
 				$this->post_settings['group'],
@@ -196,17 +190,6 @@ add_settings_error(
 			);
 			return;
 		}
-
-
-// DEBUGGING
-$old_value = print_r( get_option( $this->post_settings['group'] . '-options' ), true );
-add_settings_error(
-	$this->post_settings['group'],
-	$this->post_settings['group'],
-	"OLD: {$old_value}"
-);
-// DEBUGGING END
-
 
 		$option = array();
 
@@ -231,9 +214,6 @@ add_settings_error(
 				}
 
 				$sanitized_value = Sanitize::get_sanitized( $sanitize_type, $input_value );
-
-error_log( $setting['id'] . ': ' . print_r( $sanitized_value, true ) );
-
 				if ( 'post_type' === $id ) {
 					$option[ $sanitized_value ][ $id ] = $sanitized_value;
 					$post_type = $sanitized_value;
@@ -243,24 +223,7 @@ error_log( $setting['id'] . ': ' . print_r( $sanitized_value, true ) );
 			};
 		};
 
-
-
-
-
-// DEBUGGING
-$opout = print_r( $option, true );
-add_settings_error(
-	$this->post_settings['group'],
-	$this->post_settings['group'],
-	"NEW: {$opout}"
-);
-// DEBUGGING END
-
-
 		return $option;
-
-
-
 	}
 
 
