@@ -126,7 +126,7 @@ class Get_Input {
 				$markup = $markup . '<option value="' . $taxonomy . '"' . $selected . '>' . $taxonomy . '</option>' . "\n";
 			}
 
-		} else {
+		} elseif ( 'dashicons' === $select_type ) {
 			$options_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/select-options-' . $select_type . '.json' );
 			if ( false === !! $options_json ) {
 				return error_log( 'Bigup Web: get_select_data file not found' );
@@ -139,6 +139,8 @@ class Get_Input {
 				$selected = ( $selected_options === $value ) ? ' selected' : '';
 				$markup   = $markup . '<option value="' . $value . '"' . $selected . '>' . $label . '</option>' . "\n";
 			}
+		} else {
+			return error_log( 'Bigup Web: passed input $select_type invalid' );
 		}
 
 		return $markup;

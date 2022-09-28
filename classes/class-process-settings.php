@@ -18,7 +18,7 @@ class Process_Settings {
 	private $posts_option;
 
 	/**
-	 * Build Settings
+	 * Build From JSON
 	 *
 	 * This function accepts a json settings object and builds a settings page.
 	 *
@@ -85,11 +85,10 @@ class Process_Settings {
 
 
 	/**
-	 * Build Serialized Settings
-	 *
-	 * This function accepts a json settings object and builds a settings page. The settings will
-	 * be built from json and the option values will be populated from a single serialized option
-	 * array.
+	 * Build Custom Post Forms
+	 * 
+	 * Output the settings form for new custom post types. Also creates a form to edit an existing
+	 * custom post type if the post type key is passed.
 	 *
 	 * WP Lingo
 	 * Options === Data from databse (values)
@@ -103,8 +102,9 @@ class Process_Settings {
 	 * @param string $settings_json - JSON object formatted settings.
 	 * @param string $post_type     - The post type key (optional).
 	 */
-	public function build_custom_post_forms( $settings_json, $post_type = null ) {
+	public function build_custom_post_forms( $post_type = null ) {
 
+		$settings_json       = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
 		$this->post_settings = json_decode( $settings_json, true );
 		$page_slug           = $this->post_settings['slug'];
 		$group               = $this->post_settings['group'];
@@ -191,7 +191,8 @@ class Process_Settings {
 			return;
 		}
 
-		$option = array();
+		// Grab the existing option with array of ALL post types.
+		$option = $this->posts_option;
 
 		foreach ( $this->post_settings['sections'] as $section ) {
 			foreach ( $section['settings'] as $setting ) {

@@ -146,34 +146,31 @@ class Admin_Settings {
 			endswitch; ?>
 			</div>
 
-        </div>
+		</div>
 
-    	<?php
-    }
-
-
-	/**
-	 * Build Options
-	 * 
-	 * Get the json data from settings.json and convert to an array before sending to build_settings();
-	 */
-	public function do_settings() {
-		$this->build_plugin_settings();
-		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
-		Process_Settings::build_from_json( $json );
-
-		$main_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
-		Process_Settings::build_from_json( $main_json );
-
-		$custom_post_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
-		$custom_post_values_example_json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/example-custom-post.json' );
-		$process_options = new Process_Settings();
-		$process_options->build_custom_post_forms( $custom_post_json, 'music-post' );
+		<?php
 	}
 
 
 	/**
-	 * Build Plugin Page Options
+	 * Build Options
+	 *
+	 * Get the json data from settings.json and convert to an array before sending to build_settings();
+	 */
+	public function do_settings() {
+		$this->build_plugin_settings();
+
+		$process_settings = new Process_Settings();
+		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
+		$process_settings->build_from_json( $json );
+
+		// Calling a static post key for testing.
+		$process_settings->build_custom_post_forms( 'music-post' );
+	}
+
+
+	/**
+	 * Build Plugin Page Settings
 	 * 
 	 * Create the settings for the plugin page.
 	 */
@@ -189,7 +186,7 @@ class Admin_Settings {
 			'show_in_graphql' => true,
 			'default'         => null,
 			'page'            => 'bigup-web-custom-fields',
-			'group'           => 'bigup-custom-fields'
+			'group'           => 'bigup-custom-fields',
 		];
 
 		$page_id = get_option( $setting[ 'name' ] );
