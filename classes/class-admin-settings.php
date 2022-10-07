@@ -163,9 +163,7 @@ class Admin_Settings {
 		$process_settings = new Process_Settings();
 		$json = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
 		$process_settings->build_from_json( $json );
-
-		// Calling a static post key for testing.
-		$process_settings->build_custom_post_forms( 'music-post' );
+		$process_settings->build_custom_post_forms();
 	}
 
 
@@ -237,7 +235,6 @@ class Admin_Settings {
 			[
 				'type'              => $setting[ 'var_type' ],
 				'description'       => $setting[ 'description' ],
-				//'sanitize_callback' => Sanitize::get_callback( $setting[ 'sanitize_type' ] ),
 				'sanitize_callback' => [ New Sanitize(), 'number' ],
 				'show_in_rest'      => $setting[ 'show_in_rest' ],
 				'show_in_graphql'   => $setting[ 'show_in_graphql' ],

@@ -86,9 +86,14 @@ class Process_Settings {
 
 	/**
 	 * Build Custom Post Forms
-	 * 
-	 * Output the settings form for new custom post types. Also creates a form to edit an existing
-	 * custom post type if the post type key is passed.
+	 *
+	 * Output the settings form for new custom post types.
+	 *
+	 *
+	 * Also creates a form to edit an existing custom post type if the post type key is passed. This
+	 * could be used of the form was generated via ajax/fetch. It may be removed as the plan is to
+	 * send all setting data to the front end using localize script. In this case, this function only
+	 * ever needs to generate a form with default values.
 	 *
 	 * WP Lingo
 	 * Options === Data from databse (values)

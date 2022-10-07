@@ -1,3 +1,51 @@
+<?php
+namespace Bigup\Custom_Fields;
+$group    = 'bigup-custom-fields-custom-post-types';
+$slug     = 'bigup-custom-fields-custom-post-types';
+?>
+
+<template>
+	<tr class="inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style="">
+		<td>
+			<div class="inline-edit-wrapper">
+				<fieldset class="inline-edit-col-left">
+					<legend class="inline-edit-legend">
+						Quick Edit
+					</legend>
+					<div class="inline-edit-col">
+
+						<?php
+
+							settings_errors();
+							settings_fields( $group );
+							do_settings_sections( $slug );
+
+						?>
+
+					</div>
+				</fieldset>
+				<fieldset class="inline-edit-col-right">
+					<div class="inline-edit-col"></div>
+				</fieldset>
+				<div class="submit inline-edit-save">
+
+					<?php
+
+						submit_button(
+							'Save',                       // Button Text.
+							'button button-primary save', // CSS Classes.
+							'submit',                     // HTML name attribute.
+							false,                        // Wrap in <p>.
+						);
+					?>
+
+					<button type="button" class="button cancel">Cancel</button>
+
+				</div>
+			</div>
+		</td>
+	</tr>
+</template>
 
 <h2 class="wp-heading-inline">
 	Custom Post Types
@@ -7,7 +55,7 @@
 	Add New
 </a>
 
-<table class="wp-list-table widefat fixed striped table-view-list pages">
+<table class="wp-list-table widefat fixed striped table-view-list">
 	<thead>
 		<tr>
 			<th scope="col" id="title" class="manage-column column-title column-primary sortable desc">
@@ -15,8 +63,22 @@
 					<span>
 						Post Type
 					</span>
-					<span class="sorting-indicator"></span>
 				</a>
+			</th>
+			<th scope="col" id="icon" class="manage-column column-primary">
+				<span>
+					Icon
+				</span>
+			</th>
+			<th scope="col" id="taxonomies" class="manage-column column-primary">
+				<span>
+					Taxonomies
+				</span>
+			</th>
+			<th scope="col" id="public" class="manage-column column-primary">
+				<span>
+					Public
+				</span>
 			</th>
 		</tr>
 	</thead>
@@ -26,22 +88,18 @@
 
 		$option_name = 'bigup-custom-fields-custom-post-types-options';
 		$option      = get_option( $option_name );
-		$post_types  = ( 0 < count($option) ) ? $option : '';
-
-		echo '<pre>';
-			var_dump( $post_types );
-		echo '</pre>';
+		$post_types  = ( 0 < count( $option ) ) ? $option : '';
 
 		foreach ( $post_types as $cpt ) {
 
 			$cpt_name         = $cpt['post_type'];
 			$has_archive      = $cpt['args']['has_archive'];
-			$public           = $cpt['args']['public'];
+			$public           = ( $cpt['args']['public'] ) ? '✔' : '';
 			$show_in_menu     = $cpt['args']['show_in_menu'];
 			$menu_position    = $cpt['args']['menu_position'];
 			$menu_icon        = $cpt['args']['menu_icon'];
 			$hierarchical     = $cpt['args']['hierarchical'];
-			$taxonomies       = $cpt['args']['taxonomies'];
+			$taxonomies       = implode( ', ', $cpt['args']['taxonomies'] );
 			$show_in_rest     = $cpt['args']['show_in_rest'];
 			$show_in_graphql  = $cpt['args']['show_in_graphql'];
 			$name_plural      = $cpt['args']['name_plural'];
@@ -51,43 +109,15 @@
 echo <<<CPT
 		<tr id="post-2" class="iedit author-self level-0 post-2 type-page status-publish hentry" style="">
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
-				<div class="locked-info">
-					<span class="locked-avatar"></span>
-					<span class="locked-text"></span>
-				</div>
 				<strong>
 					<a class="row-title" href="http://localhost:8001/wp-admin/post.php?post=2&amp;action=edit" aria-label="“H1 Heading” (Edit)">
-						{$cpt_name}
+						{$name_plural}
 					</a>
 				</strong>
-				<div class="hidden" id="inline_2">
-					<div class="post_title">H1 Heading</div>
-					<div class="post_name">sample-page</div>
-					<div class="post_author">1</div>
-					<div class="comment_status">closed</div>
-					<div class="ping_status">closed</div>
-					<div class="_status">publish</div>
-					<div class="jj">27</div>
-					<div class="mm">02</div>
-					<div class="aa">2022</div>
-					<div class="hh">23</div>
-					<div class="mn">12</div>
-					<div class="ss">49</div>
-					<div class="post_password"></div>
-					<div class="post_parent">0</div>
-					<div class="page_template">page-templates/toecaps-teal.php</div>
-					<div class="menu_order">0</div>
-				</div>
 				<div class="row-actions">
-					<span class="edit">
-						<a href="http://localhost:8001/wp-admin/post.php?post=2&amp;action=edit" aria-label="Edit “H1 Heading”">
-							Edit
-						</a>
-						|
-					</span>
 					<span class="inline hide-if-no-js">
-						<button type="button" class="button-link editinline" aria-label="Quick edit “H1 Heading” inline" aria-expanded="false">
-							Quick&nbsp;Edit
+						<button type="button" class="button-link editinline" aria-label="edit" aria-expanded="false">
+							Edit
 						</button>
 						|
 					</span>
@@ -95,19 +125,17 @@ echo <<<CPT
 						<a href="http://localhost:8001/wp-admin/post.php?post=2&amp;action=trash&amp;_wpnonce=2efa6a683c" class="submitdelete" aria-label="Move “H1 Heading” to the Bin">
 							Bin
 						</a>
-						|
-					</span>
-					<span class="view">
-						<a href="http://localhost:8001/sample-page/" rel="bookmark" aria-label="View “H1 Heading”">
-							View
-						</a>
 					</span>
 				</div>
-				<button type="button" class="toggle-row">
-					<span class="screen-reader-text">
-						Show more details
-					</span>
-				</button>
+			</td>
+			<td class="has-row-actions column-primary" data-colname="Icon">
+				<span class="dashicons {$menu_icon}"></span>
+			</td>
+			<td class="has-row-actions column-primary" data-colname="Taxonomies">
+				{$taxonomies}
+			</td>
+			<td class="has-row-actions column-primary" data-colname="Public">
+				{$public}
 			</td>
 		</tr>
 CPT;
