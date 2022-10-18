@@ -90,6 +90,9 @@ $slug     = 'bigup-custom-fields-custom-post-types';
 		$option      = get_option( $option_name );
 		$post_types  = ( 0 < count( $option ) ) ? $option : '';
 
+		// Pass the CPT option to front end session storage.
+		echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . json_encode($option) . "' );</script>";
+
 		foreach ( $post_types as $cpt ) {
 
 			$cpt_name         = $cpt['post_type'];
@@ -107,7 +110,7 @@ $slug     = 'bigup-custom-fields-custom-post-types';
 			$delete_with_user = $cpt['args']['delete_with_user'];
 
 echo <<<CPT
-		<tr id="post-2" class="iedit author-self level-0 post-2 type-page status-publish hentry" style="">
+		<tr id="{$cpt_name}" class="iedit" style="">
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
 				<strong>
 					<a class="row-title" href="http://localhost:8001/wp-admin/post.php?post=2&amp;action=edit" aria-label="“H1 Heading” (Edit)">
