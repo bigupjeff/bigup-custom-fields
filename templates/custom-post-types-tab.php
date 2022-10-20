@@ -4,7 +4,7 @@ $group    = 'bigup-custom-fields-custom-post-types';
 $slug     = 'bigup-custom-fields-custom-post-types';
 ?>
 
-<template>
+<template id="inlineEditTemplate">
 	<tr class="inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style="">
 		<td>
 			<div class="inline-edit-wrapper">
@@ -119,7 +119,7 @@ echo <<<CPT
 				</strong>
 				<div class="row-actions">
 					<span class="inline hide-if-no-js">
-						<button type="button" class="button-link editinline" aria-label="edit" aria-expanded="false">
+						<button data-post-type="{$cpt_name}" type="button" class="inlineEditButton button-link editinline" aria-label="edit" aria-expanded="false">
 							Edit
 						</button>
 						|
