@@ -96,18 +96,18 @@ $slug     = 'bigup-custom-fields-custom-post-types';
 		foreach ( $post_types as $cpt ) {
 
 			$cpt_name         = $cpt['post_type'];
-			$has_archive      = $cpt['args']['has_archive'];
-			$public           = ( $cpt['args']['public'] ) ? '✔' : '';
-			$show_in_menu     = $cpt['args']['show_in_menu'];
-			$menu_position    = $cpt['args']['menu_position'];
-			$menu_icon        = $cpt['args']['menu_icon'];
-			$hierarchical     = $cpt['args']['hierarchical'];
-			$taxonomies       = implode( ', ', $cpt['args']['taxonomies'] );
-			$show_in_rest     = $cpt['args']['show_in_rest'];
-			$show_in_graphql  = $cpt['args']['show_in_graphql'];
-			$name_plural      = $cpt['args']['name_plural'];
-			$name_singular    = $cpt['args']['name_singular'];
-			$delete_with_user = $cpt['args']['delete_with_user'];
+			$has_archive      = $cpt['has_archive'];
+			$public           = ( $cpt['public'] ) ? '✔' : '';
+			$show_in_menu     = $cpt['show_in_menu'];
+			$menu_position    = $cpt['menu_position'];
+			$menu_icon        = $cpt['menu_icon'];
+			$hierarchical     = $cpt['hierarchical'];
+			$taxonomies       = implode( ', ', $cpt['taxonomies'] );
+			$show_in_rest     = $cpt['show_in_rest'];
+			$show_in_graphql  = $cpt['show_in_graphql'];
+			$name_plural      = $cpt['name_plural'];
+			$name_singular    = $cpt['name_singular'];
+			$delete_with_user = $cpt['delete_with_user'];
 
 echo <<<CPT
 		<tr id="{$cpt_name}" class="iedit" style="">

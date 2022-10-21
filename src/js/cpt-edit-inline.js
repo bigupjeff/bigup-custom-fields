@@ -29,15 +29,20 @@ const cptEditInline = () => {
 
 		const form = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
 		const data = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
-		const post  = button.getAttribute( 'data-post-type' );
+		const post = button.getAttribute( 'data-post-type' );
 
 		if ( post in data ) {
 			// Replace input field values with those from the data
-			console.log( 'function to be written...' );
-		} else {
-			alert( 'Error! Custom post type ' + post + ' not found. Please alert plugin maintainer.' );
-		}
+			const postValues = data[ post ];
 
+			for ( let [ id, value ] of Object.entries( postValues ) ) {
+				form.getElementById( id ).value = value;
+			}
+
+			console.log( form );
+		} else {
+			alert( 'Error! ' + post + ' not found in session storage. Please alert plugin maintainer.' );
+		}
 	}
 
 

@@ -145,8 +145,13 @@ class Process_Settings {
 			);
 
 			foreach ( $section['settings'] as $setting ) { // Options.
-				$id = $setting['id'];
 
+				$id    = $setting['id'];
+				$value = isset( $values[ $post_type ][ $id ] )
+							? $values[ $post_type ][ $id ]
+							: $setting['default'];
+
+				/* Old.
 				if ( 'post_type' === $id ) {
 					$value = isset( $values[ $post_type ][ $id ] )
 								? $values[ $post_type ]['post_type']
@@ -156,7 +161,7 @@ class Process_Settings {
 								? $values[ $post_type ]['args'][ $id ]
 								: $setting['default'];
 				}
-
+				*/
 
 				if ( 'select' === $setting['input_type']
 				&& true === !! $setting['select_multi'] ) {
@@ -197,7 +202,7 @@ class Process_Settings {
 		}
 
 		// Grab the existing option with array of ALL post types.
-		$option = $this->posts_option;
+		$option = ( is_array( $this->posts_option ) ) ? $this->posts_option : array();
 
 		foreach ( $this->post_settings['sections'] as $section ) {
 			foreach ( $section['settings'] as $setting ) {
@@ -220,12 +225,14 @@ class Process_Settings {
 				}
 
 				$sanitized_value = Sanitize::get_sanitized( $sanitize_type, $input_value );
+		
 				if ( 'post_type' === $id ) {
 					$option[ $sanitized_value ][ $id ] = $sanitized_value;
 					$post_type = $sanitized_value;
 				} else {
-					$option[ $post_type ]['args'][ $id ] = $sanitized_value;
+					$option[ $post_type ][ $id ] = $sanitized_value;
 				}
+
 			};
 		};
 
