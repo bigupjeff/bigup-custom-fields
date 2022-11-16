@@ -18,30 +18,41 @@ const cptEditInline = () => {
 			button.addEventListener(
 				'click',
 				function () {
+
 					displayInlineForm( this );
 				}
 			) }
 		)
 	}
  
+	function colspanUpdate( tableRow ) {
+		const colCount = tableRow.closest( 'table' ).querySelector( 'tr' ).querySelectorAll( 'th' ).length;
+		tableRow.querySelector( 'td' ).setAttribute( 'colspan', colCount );
+	}
 
 	function displayInlineForm( button ) {
 
-		const form = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
-		const data = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
-		const post = button.getAttribute( 'data-post-type' );
+		const form   = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
+		const data   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
+		const postID = button.getAttribute( 'data-post-type' );
 
-		if ( post in data ) {
-			// Replace input field values with those from the data
-			const postValues = data[ post ];
+		if ( postID in data ) {
 
-			for ( let [ id, value ] of Object.entries( postValues ) ) {
+			const inputValues = data[ postID ];
+			for ( let [ id, value ] of Object.entries( inputValues ) ) {
 				form.getElementById( id ).value = value;
 			}
+			form.querySelector( 'input#post_type' ).disabled = true;
 
-			console.log( form );
+			const postRow = document.getElementById( postID );
+			postRow.after( form );
+			postRow.style.display = 'none';
+			const editRow = document.getElementById( 'inlineEditRow' );
+
+			colspanUpdate( editRow );
+
 		} else {
-			alert( 'Error! ' + post + ' not found in session storage. Please alert plugin maintainer.' );
+			alert( 'Error! ' + postID + ' not found in session storage. Please alert plugin maintainer.' );
 		}
 	}
 

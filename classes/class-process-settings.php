@@ -151,7 +151,8 @@ class Process_Settings {
 							? $values[ $post_type ][ $id ]
 							: $setting['default'];
 
-				/* Old.
+				/*
+				 Old.
 				if ( 'post_type' === $id ) {
 					$value = isset( $values[ $post_type ][ $id ] )
 								? $values[ $post_type ]['post_type']
@@ -164,10 +165,10 @@ class Process_Settings {
 				*/
 
 				if ( 'select' === $setting['input_type']
-				&& true === !! $setting['select_multi'] ) {
-					$html_name_attr  = $options_array_name . '[' . $id . '][]';
+				&& true === ! ! $setting['select_multi'] ) {
+					$html_name_attr = $options_array_name . '[' . $id . '][]';
 				} else {
-					$html_name_attr  = $options_array_name . '[' . $id . ']';
+					$html_name_attr = $options_array_name . '[' . $id . ']';
 				}
 				$output_callback = function() use ( $setting, $value, $html_name_attr ) {
 					echo Get_Input::markup( $setting, $value, $html_name_attr );
@@ -225,14 +226,13 @@ class Process_Settings {
 				}
 
 				$sanitized_value = Sanitize::get_sanitized( $sanitize_type, $input_value );
-		
+
 				if ( 'post_type' === $id ) {
 					$option[ $sanitized_value ][ $id ] = $sanitized_value;
-					$post_type = $sanitized_value;
+					$post_type                         = $sanitized_value;
 				} else {
 					$option[ $post_type ][ $id ] = $sanitized_value;
 				}
-
 			};
 		};
 

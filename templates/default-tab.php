@@ -1,6 +1,15 @@
 <?php
-	namespace Bigup\Custom_Fields;
-	$keys = New Admin_Settings();
+/**
+ * Default Tab Template
+ *
+ * @package herringbone
+ * @author Jefferson Real <me@jeffersonreal.uk>
+ * @copyright Copyright (c) 2022, Jefferson Real
+ */
+
+namespace Bigup\Custom_Fields;
+
+$keys = new Admin_Settings();
 
 ?>
 

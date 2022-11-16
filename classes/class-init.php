@@ -11,7 +11,6 @@ namespace Bigup\Custom_Fields;
  * @copyright Copyright (c) 2022, Jefferson Real
  * @license GPL2+
  * @link https://jeffersonreal.uk
- * 
  */
 
 // WordPress dependencies.
@@ -21,18 +20,17 @@ use function add_action;
 class Init {
 
 
-    /**
-     * Use this function to initialise all dependencies for the plugin.
-     * 
-     */
-    public function __construct() {
+	/**
+	 * Use this function to initialise all dependencies for the plugin.
+	 */
+	public function __construct() {
 
 		/**
 		 * Enqueue admin scripts and styles.
 		 */
-		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts_and_styles' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts_and_styles' ) );
 
-    }
+	}
 
 
 	/**
@@ -69,4 +67,4 @@ class Init {
 
 	}
 
-}// Class end
+}//end class

@@ -1,7 +1,16 @@
 <?php
+/**
+ * Custom Fields Tab Template
+ *
+ * @package herringbone
+ * @author Jefferson Real <me@jeffersonreal.uk>
+ * @copyright Copyright (c) 2022, Jefferson Real
+ */
+
 namespace Bigup\Custom_Fields;
-$group    = 'bigup-custom-fields-custom-post-types';
-$slug     = 'bigup-custom-fields-custom-post-types';
+
+$group = 'bigup-custom-fields-custom-post-types';
+$slug  = 'bigup-custom-fields-custom-post-types';
 ?>
 
 

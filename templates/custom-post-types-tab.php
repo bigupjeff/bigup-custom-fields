@@ -1,12 +1,22 @@
 <?php
+/**
+ * Custom Posts Tab Template
+ *
+ * @package herringbone
+ * @author Jefferson Real <me@jeffersonreal.uk>
+ * @copyright Copyright (c) 2022, Jefferson Real
+ */
+
 namespace Bigup\Custom_Fields;
-$group    = 'bigup-custom-fields-custom-post-types';
-$slug     = 'bigup-custom-fields-custom-post-types';
+
+$group = 'bigup-custom-fields-custom-post-types';
+$slug  = 'bigup-custom-fields-custom-post-types';
+
 ?>
 
 <template id="inlineEditTemplate">
-	<tr class="inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style="">
-		<td>
+	<tr id="inlineEditRow" class="inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor">
+		<td colspan="5">
 			<div class="inline-edit-wrapper">
 				<fieldset class="inline-edit-col-left">
 					<legend class="inline-edit-legend">
@@ -37,7 +47,7 @@ $slug     = 'bigup-custom-fields-custom-post-types';
 							'submit',                     // HTML name attribute.
 							false,                        // Wrap in <p>.
 						);
-					?>
+						?>
 
 					<button type="button" class="button cancel">Cancel</button>
 
@@ -86,12 +96,15 @@ $slug     = 'bigup-custom-fields-custom-post-types';
 
 		<?php
 
-		$option_name = 'bigup-custom-fields-custom-post-types-options';
-		$option      = get_option( $option_name );
+		$option = get_option( 'bigup-custom-fields-custom-post-types-options' );
+		if ( false === $option ) {
+			echo '<tr><td><strong>No custom post types found. Click "Add New" to create one.</strong></tr></td>';
+			return;
+		}
 		$post_types  = ( 0 < count( $option ) ) ? $option : '';
 
 		// Pass the CPT option to front end session storage.
-		echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . json_encode($option) . "' );</script>";
+		echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $option ) . "' );</script>";
 
 		foreach ( $post_types as $cpt ) {
 
@@ -109,11 +122,11 @@ $slug     = 'bigup-custom-fields-custom-post-types';
 			$name_singular    = $cpt['name_singular'];
 			$delete_with_user = $cpt['delete_with_user'];
 
-echo <<<CPT
+			$html = <<<CPT
 		<tr id="{$cpt_name}" class="iedit" style="">
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
 				<strong>
-					<a class="row-title" href="http://localhost:8001/wp-admin/post.php?post=2&amp;action=edit" aria-label="“H1 Heading” (Edit)">
+					<a class="row-title" href="#" aria-label="“H1 Heading” (Edit)">
 						{$name_plural}
 					</a>
 				</strong>
@@ -125,7 +138,7 @@ echo <<<CPT
 						|
 					</span>
 					<span class="trash">
-						<a href="http://localhost:8001/wp-admin/post.php?post=2&amp;action=trash&amp;_wpnonce=2efa6a683c" class="submitdelete" aria-label="Move “H1 Heading” to the Bin">
+						<a href="#" class="submitdelete" aria-label="Move “H1 Heading” to the Bin">
 							Bin
 						</a>
 					</span>
@@ -142,12 +155,10 @@ echo <<<CPT
 			</td>
 		</tr>
 CPT;
+			echo $html;
 
 		}
 		?>
-
-
-
 
 	</tbody>
 </table>
