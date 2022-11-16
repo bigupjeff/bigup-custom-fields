@@ -24,6 +24,7 @@ const cptEditInline = () => {
 			) }
 		)
 	}
+	
  
 	function colspanUpdate( tableRow ) {
 		const colCount = tableRow.closest( 'table' ).querySelector( 'tr' ).querySelectorAll( 'th' ).length;
