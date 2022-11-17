@@ -151,19 +151,6 @@ class Process_Settings {
 							? $values[ $post_type ][ $id ]
 							: $setting['default'];
 
-				/*
-				 Old.
-				if ( 'post_type' === $id ) {
-					$value = isset( $values[ $post_type ][ $id ] )
-								? $values[ $post_type ]['post_type']
-								: $setting['default'];
-				} else {
-					$value = isset( $values[ $post_type ]['args'][ $id ] )
-								? $values[ $post_type ]['args'][ $id ]
-								: $setting['default'];
-				}
-				*/
-
 				if ( 'select' === $setting['input_type']
 				&& true === ! ! $setting['select_multi'] ) {
 					$html_name_attr = $options_array_name . '[' . $id . '][]';
@@ -240,4 +227,35 @@ class Process_Settings {
 	}
 
 
-}//end class
+	/**
+	 * Output the settings fields for a section wrapped in divs.
+	 *
+	 * This mimics most of the functionality of WP do_settings_sections() and do_settings_fields()
+	 * which wrap settings in a table by default.
+	 *
+	 * @param string $page Slug title of the admin page.
+	 * @param string $section Slug title of the settings section.
+	 */
+	public static function do_settings_in_divs( $page ) {
+		global $wp_settings_sections, $wp_settings_fields;
+
+		if ( ! isset( $wp_settings_sections[ $page ] ) ) {
+			return;
+		}
+
+		foreach ( (array) $wp_settings_sections[ $page ] as $section) {
+
+			if ( ! isset( $wp_settings_fields[ $page ][ $section[ 'id' ] ] ) ) {
+				return;
+			}
+
+			foreach ( (array) $wp_settings_fields[ $page ][ $section[ 'id' ] ] as $field ) {
+
+				echo '<label class="field">';
+					echo '<span class="field_title">' . $field['title'] . '</span>';
+					call_user_func( $field['callback'], $field['args'] );
+				echo '</label>';
+			}
+		}
+	}
+}

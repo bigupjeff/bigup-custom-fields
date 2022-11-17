@@ -12,7 +12,7 @@
 const cptEditInline = () => {
 
 
-	function initialise() {
+	const initialise = () => {
 
 		[ ...document.querySelectorAll( '.inlineEditButton' ) ].forEach ( button => {
 			button.addEventListener(
@@ -26,12 +26,12 @@ const cptEditInline = () => {
 	}
 	
  
-	function colspanUpdate( tableRow ) {
+	const colspanUpdate = ( tableRow ) => {
 		const colCount = tableRow.closest( 'table' ).querySelector( 'tr' ).querySelectorAll( 'th' ).length;
 		tableRow.querySelector( 'td' ).setAttribute( 'colspan', colCount );
 	}
 
-	function displayInlineForm( button ) {
+	const displayInlineForm = ( button ) => {
 
 		const form   = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
 		const data   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
@@ -58,7 +58,7 @@ const cptEditInline = () => {
 	}
 
 
-	let docLoaded = setInterval( () => {
+	const docLoaded = setInterval( () => {
 		if ( document.readyState === 'complete' ) {
 			clearInterval( docLoaded );
 			initialise();

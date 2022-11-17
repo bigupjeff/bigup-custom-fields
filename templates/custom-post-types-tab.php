@@ -9,45 +9,38 @@
 
 namespace Bigup\Custom_Fields;
 
-$group = 'bigup-custom-fields-custom-post-types';
-$slug  = 'bigup-custom-fields-custom-post-types';
+$group   = 'bigup-custom-fields-custom-post-types';
+$slug    = 'bigup-custom-fields-custom-post-types';
 
 ?>
 
 <template id="inlineEditTemplate">
+	<tr class="hidden"></tr>
 	<tr id="inlineEditRow" class="inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor">
 		<td colspan="5">
 			<div class="inline-edit-wrapper">
-				<fieldset class="inline-edit-col-left">
+				<fieldset class="inline-edit-fieldset">
 					<legend class="inline-edit-legend">
-						Quick Edit
+						Edit Custom Post Type
 					</legend>
-					<div class="inline-edit-col">
 
 						<?php
-
 							settings_errors();
 							settings_fields( $group );
-							do_settings_sections( $slug );
-
+							Process_Settings::do_settings_in_divs( $slug );
 						?>
 
-					</div>
-				</fieldset>
-				<fieldset class="inline-edit-col-right">
-					<div class="inline-edit-col"></div>
 				</fieldset>
 				<div class="submit inline-edit-save">
 
 					<?php
-
-						submit_button(
-							'Save',                       // Button Text.
-							'button button-primary save', // CSS Classes.
-							'submit',                     // HTML name attribute.
-							false,                        // Wrap in <p>.
-						);
-						?>
+					submit_button(
+						'Save',                       // Button Text.
+						'button button-primary save', // CSS Classes.
+						'submit',                     // HTML name attribute.
+						false,                        // Wrap in <p>.
+					);
+					?>
 
 					<button type="button" class="button cancel">Cancel</button>
 
@@ -61,7 +54,7 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 	Custom Post Types
 </h2>
 
-<a href="http://192.168.1.92:8001/wp-admin/post-new.php?post_type=page" class="page-title-action">
+<a href="#" class="page-title-action">
 	Add New
 </a>
 
