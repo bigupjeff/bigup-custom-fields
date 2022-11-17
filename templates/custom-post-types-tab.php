@@ -9,16 +9,16 @@
 
 namespace Bigup\Custom_Fields;
 
-$group   = 'bigup-custom-fields-custom-post-types';
-$slug    = 'bigup-custom-fields-custom-post-types';
+$group = 'bigup-custom-fields-custom-post-types';
+$slug  = 'bigup-custom-fields-custom-post-types';
 
 ?>
 
 <template id="inlineEditTemplate">
-	<tr class="hidden"></tr>
-	<tr id="inlineEditRow" class="inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor">
+	<tr id="hiddenRow" class="editActive hidden"></tr>
+	<tr id="editRow" class="editActive inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor">
 		<td colspan="5">
-			<div class="inline-edit-wrapper">
+			<form method="post" action="options.php" class="inline-edit-wrapper">
 				<fieldset class="inline-edit-fieldset">
 					<legend class="inline-edit-legend">
 						Edit Custom Post Type
@@ -42,10 +42,10 @@ $slug    = 'bigup-custom-fields-custom-post-types';
 					);
 					?>
 
-					<button type="button" class="button cancel">Cancel</button>
+					<button type="button" class="button inlineCancelButton">Cancel</button>
 
 				</div>
-			</div>
+			</form>
 		</td>
 	</tr>
 </template>
@@ -54,11 +54,11 @@ $slug    = 'bigup-custom-fields-custom-post-types';
 	Custom Post Types
 </h2>
 
-<a href="#" class="page-title-action">
+<button id="addNewButton" class="page-title-action">
 	Add New
-</a>
+</button>
 
-<table class="wp-list-table widefat fixed striped table-view-list">
+<table id="customPostsTable" class="wp-list-table widefat fixed striped table-view-list">
 	<thead>
 		<tr>
 			<th scope="col" id="title" class="manage-column column-title column-primary sortable desc">
@@ -89,17 +89,16 @@ $slug    = 'bigup-custom-fields-custom-post-types';
 
 		<?php
 
-		$option = get_option( 'bigup-custom-fields-custom-post-types-options' );
-		if ( false === $option ) {
-			echo '<tr><td><strong>No custom post types found. Click "Add New" to create one.</strong></tr></td>';
+		$custom_post_types = get_option( 'bigup-custom-fields-custom-post-types-options' );
+
+		if ( false === $custom_post_types || ! is_array( $custom_post_types) ) {
+			echo '<tr class="editActive"><td><strong>No custom post types found. Click "Add New" to create one.</strong></tr></td>';
 			return;
 		}
-		$post_types  = ( 0 < count( $option ) ) ? $option : '';
 
-		// Pass the CPT option to front end session storage.
-		echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $option ) . "' );</script>";
+		// CPT option passed to front end session storage below this table.
 
-		foreach ( $post_types as $cpt ) {
+		foreach ( $custom_post_types as $cpt ) {
 
 			$cpt_name         = $cpt['post_type'];
 			$has_archive      = $cpt['has_archive'];
@@ -116,7 +115,7 @@ $slug    = 'bigup-custom-fields-custom-post-types';
 			$delete_with_user = $cpt['delete_with_user'];
 
 			$html = <<<CPT
-		<tr id="{$cpt_name}" class="iedit" style="">
+		<tr id="{$cpt_name}" class="customPostTypeRow iedit">
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
 				<strong>
 					<a class="row-title" href="#" aria-label="“H1 Heading” (Edit)">
@@ -155,3 +154,5 @@ CPT;
 
 	</tbody>
 </table>
+
+<?php echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $custom_post_types ) . "' );</script>"; ?>

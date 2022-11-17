@@ -16,6 +16,16 @@ class Process_Settings {
 
 	private $post_settings;
 	private $posts_option;
+	private $group;
+	private $options_array_name;
+
+	public function __construct() {
+		$settings_json            = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
+		$this->post_settings      = json_decode( $settings_json, true );
+		$this->group              = $this->post_settings['group'];
+		$this->options_array_name = $this->group . '-options';
+		$this->posts_option       = get_option( $this->options_array_name );
+	}
 
 	/**
 	 * Build From JSON
@@ -109,14 +119,13 @@ class Process_Settings {
 	 */
 	public function build_custom_post_forms( $post_type = null ) {
 
-		$settings_json       = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
-		$this->post_settings = json_decode( $settings_json, true );
-		$page_slug           = $this->post_settings['slug'];
-		$group               = $this->post_settings['group'];
-		$options_array_name  = $group . '-options';
-		$this->posts_option  = get_option( $options_array_name );
+		$post_settings       = $this->post_settings;
+		$posts_option        = $this->posts_option;
+		$page_slug           = $post_settings['slug'];
+		$group               = $this->group;
+		$options_array_name  = $this->options_array_name;
 
-		$values = isset( $this->posts_option[ $post_type ] ) ? $this->posts_option : array();
+		$values = isset( $posts_option[ $post_type ] ) ? $posts_option : array();
 
 		register_setting(
 			$group,                                                // Option group.
@@ -128,7 +137,7 @@ class Process_Settings {
 			)
 		);
 
-		foreach ( $this->post_settings['sections'] as $section ) { // Sections.
+		foreach ( $post_settings['sections'] as $section ) { // Sections.
 			$html     = $section['description_html'];
 			$callback = function() use ( $html ) {
 				if ( null === $html ) {
@@ -180,19 +189,27 @@ class Process_Settings {
 	 */
 	public function sanitize( $input ) {
 
+		$posts_option  = $this->posts_option;
+		$post_settings = $this->post_settings;
+
+//DEBUG
+error_log( '### DEBUG ###' );
+$out = var_dump( $input );
+error_log( json_encode($input) );
+
 		if ( ! is_array( $input ) || ! isset( $input ) ) {
 			add_settings_error(
-				$this->post_settings['group'],
-				$this->post_settings['group'],
+				$post_settings['group'],
+				$post_settings['group'],
 				'Bigup Web Error: Unexpected option values recieved. Please report this error to the plugin developer.'
 			);
 			return;
 		}
 
 		// Grab the existing option with array of ALL post types.
-		$option = ( is_array( $this->posts_option ) ) ? $this->posts_option : array();
+		$option = ( is_array( $posts_option ) ) ? $posts_option : array();
 
-		foreach ( $this->post_settings['sections'] as $section ) {
+		foreach ( $post_settings['sections'] as $section ) {
 			foreach ( $section['settings'] as $setting ) {
 				$id = $setting['id'];
 
@@ -251,10 +268,17 @@ class Process_Settings {
 
 			foreach ( (array) $wp_settings_fields[ $page ][ $section[ 'id' ] ] as $field ) {
 
-				echo '<label class="field">';
+				// Hide $post_type which should not be edited by the user.
+				if ( 'post_type' !== $field['id'] ) {
+					echo '<label class="field">';
 					echo '<span class="field_title">' . $field['title'] . '</span>';
 					call_user_func( $field['callback'], $field['args'] );
-				echo '</label>';
+					echo '</label>';
+
+				} else {
+					call_user_func( $field['callback'], $field['args'] );
+
+				}
 			}
 		}
 	}

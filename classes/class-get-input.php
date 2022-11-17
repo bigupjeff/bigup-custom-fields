@@ -32,6 +32,15 @@ class Get_Input {
 
 		switch ( $setting['input_type'] ) {
 
+			case 'hidden':
+				return sprintf(
+					'<input type="hidden" name="%s" id="%s" value="%s" required>',
+					$name,
+					$setting['id'],
+					$value,
+					$setting['required']
+				);
+
 			case 'text':
 				return sprintf(
 					'<input type="%s" name="%s" id="%s" value="%s" required>',

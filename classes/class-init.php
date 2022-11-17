@@ -50,21 +50,27 @@ class Init {
 			wp_enqueue_style( 'bigup_icons' );
 		}
 
-		wp_enqueue_style(
-			'bigup_custom_fields_admin_css',
-			BIGUP_CUSTOM_FIELDS_PLUGIN_URL . 'css/admin.css',
-			array(),
-			filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'css/admin.css' ),
-			'all'
-		);
-		wp_enqueue_script(
-			'bigup_custom_fields_bundle_js',
-			BIGUP_CUSTOM_FIELDS_PLUGIN_URL . '/js/bundle.js',
-			array(),
-			filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . '/js/bundle.js' ),
-			true
-		);
+		// Only enqueue these assets when on a page of this plugin.
+		global $pagenow;
+		$slug = plugin_basename( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH );
 
+		if ( isset( $_GET['page'] ) && $_GET['page'] === $slug ) {
+
+			wp_enqueue_style(
+				'bigup_custom_fields_admin_css',
+				BIGUP_CUSTOM_FIELDS_PLUGIN_URL . 'css/admin.css',
+				array(),
+				filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'css/admin.css' ),
+				'all'
+			);
+			wp_enqueue_script(
+				'bigup_custom_fields_bundle_js',
+				BIGUP_CUSTOM_FIELDS_PLUGIN_URL . '/js/bundle.js',
+				array(),
+				filemtime( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . '/js/bundle.js' ),
+				true
+			);
+		}
 	}
 
 }//end class

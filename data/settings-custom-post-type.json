@@ -10,7 +10,7 @@
 				{
 					"id": "post_type",
 					"label": "Post Type Key",
-					"input_type": "text",
+					"input_type": "hidden",
 					"length_limit": 20,
 					"required": "required",
 					"sanitize_type": "key",
@@ -19,13 +19,26 @@
 					"default": "my-post"
 				},
 				{
-					"id": "has_archive",
-					"label": "Enable Archive",
-					"input_type": "checkbox",
-					"sanitize_type": "checkbox",
-					"var_type": "boolean",
+					"id": "name_singular",
+					"label": "Singular Name",
+					"input_type": "text",
+					"length_limit": 30,
+					"required": "required",
+					"sanitize_type": "text",
+					"var_type": "string",
 					"description": "",
-					"default": false
+					"default": "My Post"
+				},
+				{
+					"id": "name_plural",
+					"label": "Plural Name",
+					"input_type": "text",
+					"length_limit": 30,
+					"required": "required",
+					"sanitize_type": "text",
+					"var_type": "string",
+					"description": "",
+					"default": "My Posts"
 				},
 				{
 					"id": "public",
@@ -71,6 +84,15 @@
 					"default": "dashicons-screenoptions"
 				},
 				{
+					"id": "has_archive",
+					"label": "Enable Archive",
+					"input_type": "checkbox",
+					"sanitize_type": "checkbox",
+					"var_type": "boolean",
+					"description": "",
+					"default": false
+				},
+				{
 					"id": "hierarchical",
 					"label": "Hierarchical",
 					"input_type": "checkbox",
@@ -108,28 +130,6 @@
 					"var_type": "boolean",
 					"description": "",
 					"default": true
-				},
-				{
-					"id": "name_plural",
-					"label": "Plural Name",
-					"input_type": "text",
-					"length_limit": 30,
-					"required": "required",
-					"sanitize_type": "text",
-					"var_type": "string",
-					"description": "",
-					"default": "My Posts"
-				},
-				{
-					"id": "name_singular",
-					"label": "Singular Name",
-					"input_type": "text",
-					"length_limit": 30,
-					"required": "required",
-					"sanitize_type": "text",
-					"var_type": "string",
-					"description": "",
-					"default": "My Post"
 				},
 				{
 					"id": "delete_with_user",
