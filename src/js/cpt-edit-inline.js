@@ -81,11 +81,11 @@ const cptEditInline = () => {
 	const readyForm = ( formRow ) => {
 		colspanUpdate( formRow );
 		resizeObserver.observe( formRow );
-		addListenerToCanelButton( formRow.querySelector( '.inlineCancelButton' ) );
+		addListenerToCancelButton( formRow.querySelector( '.inlineCancelButton' ) );
 	};
 
 
-	const addListenerToCanelButton = ( button ) => {
+	const addListenerToCancelButton = ( button ) => {
 		button.addEventListener(
 			'click',
 			function () {
