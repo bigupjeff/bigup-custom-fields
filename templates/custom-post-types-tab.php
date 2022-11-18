@@ -24,11 +24,11 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 						Edit Custom Post Type
 					</legend>
 
-						<?php
-							settings_errors();
-							settings_fields( $group );
-							Process_Settings::do_settings_in_divs( $slug );
-						?>
+					<?php
+						settings_errors();
+						settings_fields( $group );
+						Process_Settings::do_settings_in_divs( $slug );
+					?>
 
 				</fieldset>
 				<div class="submit inline-edit-save">

@@ -66,6 +66,9 @@ class Sanitize {
 			case 'text':
 				return self::text( $value );
 
+			case 'alphanumeric':
+				return self::alphanumeric( $value );
+
 			case 'email':
 				return self::email( $value );
 
@@ -123,6 +126,17 @@ class Sanitize {
 
 		$clean_text = sanitize_text_field( $text );
 		return $clean_text;
+	}
+
+
+	/**
+	 * Sanitize an alphanumeric string.
+	 */
+	public static function alphanumeric( $alphanumeric ) {
+
+		// This is incomplete!
+		$clean_alphanumeric = preg_replace( '/[\W]/', '', $str);
+		return $clean_alphanumeric;
 	}
 
 

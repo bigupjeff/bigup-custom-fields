@@ -27,7 +27,8 @@
 					"sanitize_type": "text",
 					"var_type": "string",
 					"description": "",
-					"default": "My Post"
+					"default": "",
+					"placeholder": "My Post"
 				},
 				{
 					"id": "name_plural",
@@ -38,7 +39,8 @@
 					"sanitize_type": "text",
 					"var_type": "string",
 					"description": "",
-					"default": "My Posts"
+					"default": "",
+					"placeholder": "My Posts"
 				},
 				{
 					"id": "public",
