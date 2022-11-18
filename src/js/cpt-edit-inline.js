@@ -81,15 +81,59 @@ const cptEditInline = () => {
 	const readyForm = ( formRow ) => {
 		colspanUpdate( formRow );
 		resizeObserver.observe( formRow );
-		addListenerToCancelButton( formRow.querySelector( '.inlineCancelButton' ) );
+		attachFormResetListener( formRow.querySelector( '.inlineCancelButton' ) );
+		attachNameValidationListener( formRow.querySelector( '#name_singular' ) );
 	};
 
 
-	const addListenerToCancelButton = ( button ) => {
+	const attachFormResetListener = ( button ) => {
 		button.addEventListener(
 			'click',
 			function () {
 				resetTable();
+			}
+		)
+	};
+
+
+	const attachNameValidationListener = ( input ) => {
+		const hiddenInput = input.closest( 'form' ).querySelector( '#post_type' );
+		input.addEventListener(
+			'keyup',
+			function () {
+
+				const doError = () => {
+					alert( 'This field can only contain alphanumeric, space and hyphen characters' );
+				}
+
+				const cleanSpacesAndHyphens = ( string ) => {
+					const singleHyphen = string.replace( /--+/g, '-' );
+					const singleSpace = singleHyphen.replace( /  +/g, ' ' );
+					const cleanString = singleSpace.trim();
+					return cleanString;
+				}
+
+				const string = input.value;
+				const regex  = new RegExp( input.getAttribute( 'pattern' ), 'ug' );
+				let okChars  = string.match( regex );
+
+				if ( Array.isArray( okChars ) ) {
+					const joined = okChars.join( '' );
+					okChars = joined;
+				} else {
+					input.value = '';
+					doError();
+					return;
+				}
+
+console.log( okChars );
+// BAD LOGIC! tHE FOLLOWING if wont update the hidden input. REFACTOR!!
+				if ( string.length !== okChars.length ) {
+					input.value = cleanSpacesAndHyphens( okChars );
+					doError();
+					return;
+				}
+				hiddenInput.value = cleanSpacesAndHyphens( okChars );
 			}
 		)
 	};

@@ -155,4 +155,4 @@ CPT;
 	</tbody>
 </table>
 
-<?php echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $custom_post_types ) . "' );</script>"; ?>
+<?php echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $custom_post_types ) . "' );</script>\n"; ?>

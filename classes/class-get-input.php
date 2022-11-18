@@ -43,12 +43,13 @@ class Get_Input {
 
 			case 'text':
 				return sprintf(
-					'<input type="%s" name="%s" id="%s" value="%s" placeholder="%s" required>',
+					'<input type="%s" name="%s" id="%s" value="%s" placeholder="%s" %s required>',
 					$setting['input_type'],
 					$name,
 					$setting['id'],
 					$value,
 					$setting['placeholder'],
+					$p = ( isset( $setting['regex'] ) ) ? 'pattern="' . $setting['regex'] . '"' : '',
 					$setting['required']
 				);
 

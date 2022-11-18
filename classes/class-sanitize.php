@@ -28,6 +28,13 @@ class Sanitize {
 	 */
 	public static function get_callback( $type ) {
 		switch ( $type ) {
+
+			case 'wp_post_name':
+				return array( new Sanitize(), 'wp_post_name' );
+
+			case 'alphanumeric':
+				return array( new Sanitize(), 'alphanumeric' );
+
 			case 'text':
 				return array( new Sanitize(), 'text' );
 
@@ -46,7 +53,7 @@ class Sanitize {
 			case 'checkbox':
 				return array( new Sanitize(), 'checkbox' );
 
-			case 'key':
+			case 'wp_post_key':
 				return array( new Sanitize(), 'key' );
 
 			default:
@@ -63,11 +70,15 @@ class Sanitize {
 	public static function get_sanitized( $type, $value ) {
 
 		switch ( $type ) {
-			case 'text':
-				return self::text( $value );
+
+			case 'wp_post_name':
+				return self::wp_post_name( $value );
 
 			case 'alphanumeric':
 				return self::alphanumeric( $value );
+
+			case 'text':
+				return self::text( $value );
 
 			case 'email':
 				return self::email( $value );
@@ -84,7 +95,7 @@ class Sanitize {
 			case 'checkbox':
 				return self::checkbox( $value );
 
-			case 'key':
+			case 'wp_post_key':
 				return self::key( $value );
 
 			case is_array( $type ):
@@ -120,12 +131,14 @@ class Sanitize {
 
 
 	/**
-	 * Sanitize a text string.
+	 * Sanitize a WordPress post name string.
 	 */
-	public static function text( $text ) {
+	public static function wp_post_name( $wp_post_name ) {
 
-		$clean_text = sanitize_text_field( $text );
-		return $clean_text;
+		$alpha_wp_post_name = self::alphanumeric( $wp_post_name );
+		$trim_wp_post_name  = trim( $alpha_wp_post_name );
+		$clean_wp_post_name = substr( $trim_wp_post_name, 0, 30 );
+		return $clean_wp_post_name;
 	}
 
 
@@ -134,9 +147,21 @@ class Sanitize {
 	 */
 	public static function alphanumeric( $alphanumeric ) {
 
-		// This is incomplete!
-		$clean_alphanumeric = preg_replace( '/[\W]/', '', $str);
+		$word_chars         = preg_replace( "/[£]||[^- \p{L}\p{N}]/", '', $alphanumeric );
+		$no_uscore          = preg_replace( '/_/', '-', $word_chars );
+		$single_hyphen      = preg_replace( '/--+/', '-', $no_uscore );
+		$clean_alphanumeric = preg_replace( '/  +/', ' ', $single_hyphen );
 		return $clean_alphanumeric;
+	}
+
+
+	/**
+	 * Sanitize a text string.
+	 */
+	public static function text( $text ) {
+
+		$clean_text = sanitize_text_field( $text );
+		return $clean_text;
 	}
 
 
@@ -209,10 +234,11 @@ class Sanitize {
 	/**
 	 * Sanitize a WP key.
 	 */
-	public static function key( $key ) {
+	public static function key( $wp_post_key ) {
 
-		$clean_key = sanitize_key( $key );
-		return $clean_key;
+		$sanitized = sanitize_key( $wp_post_key );
+		$clean_wp_post_key    = substr( $sanitized, 0, 20 );
+		return $clean_wp_post_key;
 	}
 
 

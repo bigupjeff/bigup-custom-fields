@@ -13,7 +13,7 @@
 					"input_type": "hidden",
 					"length_limit": 20,
 					"required": "required",
-					"sanitize_type": "key",
+					"sanitize_type": "wp_post_key",
 					"var_type": "string",
 					"description": "",
 					"default": "my-post"
@@ -24,11 +24,12 @@
 					"input_type": "text",
 					"length_limit": 30,
 					"required": "required",
-					"sanitize_type": "text",
+					"sanitize_type": "wp_post_name",
 					"var_type": "string",
 					"description": "",
 					"default": "",
-					"placeholder": "My Post"
+					"placeholder": "My Post",
+					"regex": "[- \\p{L}\\p{N}]*"
 				},
 				{
 					"id": "name_plural",
@@ -36,11 +37,12 @@
 					"input_type": "text",
 					"length_limit": 30,
 					"required": "required",
-					"sanitize_type": "text",
+					"sanitize_type": "wp_post_name",
 					"var_type": "string",
 					"description": "",
 					"default": "",
-					"placeholder": "My Posts"
+					"placeholder": "My Posts",
+					"regex": "[- \\p{L}\\p{N}]*"
 				},
 				{
 					"id": "public",
