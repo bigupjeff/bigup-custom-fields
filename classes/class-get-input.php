@@ -43,13 +43,14 @@ class Get_Input {
 
 			case 'text':
 				return sprintf(
-					'<input type="%s" name="%s" id="%s" value="%s" placeholder="%s" %s required>',
+					'<input type="%s" name="%s" id="%s" value="%s" placeholder="%s" %s %s required>',
 					$setting['input_type'],
 					$name,
 					$setting['id'],
 					$value,
 					$setting['placeholder'],
-					$p = ( isset( $setting['regex'] ) ) ? 'pattern="' . $setting['regex'] . '"' : '',
+					$r = ( isset( $setting['regex'] ) ) ? 'pattern="' . $setting['regex'] . '"' : '',
+					$l = ( isset( $setting['length_limit'] ) ) ? 'maxlength="' . $setting['length_limit'] . '"' : '',
 					$setting['required']
 				);
 

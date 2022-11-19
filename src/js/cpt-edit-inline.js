@@ -83,6 +83,7 @@ const cptEditInline = () => {
 		resizeObserver.observe( formRow );
 		attachFormResetListener( formRow.querySelector( '.inlineCancelButton' ) );
 		attachNameValidationListener( formRow.querySelector( '#name_singular' ) );
+		attachNameValidationListener( formRow.querySelector( '#name_plural' ) );
 	};
 
 
@@ -97,46 +98,63 @@ const cptEditInline = () => {
 
 
 	const attachNameValidationListener = ( input ) => {
-		const hiddenInput = input.closest( 'form' ).querySelector( '#post_type' );
 		input.addEventListener(
 			'keyup',
 			function () {
 
-				const doError = () => {
-					alert( 'This field can only contain alphanumeric, space and hyphen characters' );
-				}
-
-				const cleanSpacesAndHyphens = ( string ) => {
-					const singleHyphen = string.replace( /--+/g, '-' );
-					const singleSpace = singleHyphen.replace( /  +/g, ' ' );
-					const cleanString = singleSpace.trim();
-					return cleanString;
-				}
-
-				const string = input.value;
-				const regex  = new RegExp( input.getAttribute( 'pattern' ), 'ug' );
-				let okChars  = string.match( regex );
+				const string   = input.value;
+				const regex    = new RegExp( input.getAttribute( 'pattern' ), 'ug' );
+				let okChars    = string.match( regex );
+				const validMsg = 'This field can only contain alphanumeric characters, spaces and hyphens.';
 
 				if ( Array.isArray( okChars ) ) {
 					const joined = okChars.join( '' );
 					okChars = joined;
 				} else {
 					input.value = '';
-					doError();
+					doInputMessage(
+						input,
+						validMsg
+					);
 					return;
 				}
 
-console.log( okChars );
-// BAD LOGIC! tHE FOLLOWING if wont update the hidden input. REFACTOR!!
 				if ( string.length !== okChars.length ) {
-					input.value = cleanSpacesAndHyphens( okChars );
-					doError();
-					return;
+					doInputMessage(
+						input,
+						validMsg
+					);
 				}
-				hiddenInput.value = cleanSpacesAndHyphens( okChars );
+
+				input.value = cleanSpacesAndHyphens( okChars );
 			}
 		)
 	};
+
+
+	const cleanSpacesAndHyphens = ( string ) => {
+		const singleHyphens       = string.replace( /--+/g, '-' );
+		const singleSpaces        = singleHyphens.replace( /  +/g, ' ' );
+		const noLeadSpaces        = singleSpaces.trimStart();
+		const max1TrailingSpace   = noLeadSpaces.replace( /\s+$/g, ' ' );
+		return max1TrailingSpace;
+	}
+
+
+	const doInputMessage = ( input, text ) => {
+		if ( true === !! input.closest( 'label' ).querySelector( '.inputMessage' ) ) {
+			return;
+		}
+		const div     = document.createElement( 'div' );
+		const message = document.createTextNode( text );
+		div.appendChild( message );
+		div.classList.add( 'inputMessage' );
+		input.after( div );
+		const removeDiv = setTimeout( () => {
+			div.remove();
+			clearTimeout( removeDiv );
+		}, 5000);
+	}
 
 
 	const resetTable = () => {

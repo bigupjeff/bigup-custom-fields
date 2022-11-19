@@ -60,3 +60,11 @@
 			font-size: 13px;
 		}
 }
+
+.inputMessage {
+	grid-column-start: 1;
+	grid-column-end: -1;
+	background: yellow;
+	padding: 0.2em 1em;
+	color: #000;
+}
