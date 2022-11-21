@@ -45,8 +45,8 @@ const cptEditInline = () => {
 		const table = document.querySelector( '#customPostsTable' );
 		form.querySelector( 'legend' ).innerHTML = 'New Custom Post Type';
 		table.querySelector( 'tbody' ).prepend( form );
-
 		readyForm( document.querySelector( '#editRow' ) );
+		attachNameToKeyListener( document.querySelector( '#customPostsTable #editRow #name_singular' ) );
 	};
 	
 
@@ -84,6 +84,7 @@ const cptEditInline = () => {
 		attachFormResetListener( formRow.querySelector( '.inlineCancelButton' ) );
 		attachNameValidationListener( formRow.querySelector( '#name_singular' ) );
 		attachNameValidationListener( formRow.querySelector( '#name_plural' ) );
+		attachSubmitListener( formRow.querySelector( '#submit' ) );
 	};
 
 
@@ -130,6 +131,30 @@ const cptEditInline = () => {
 			}
 		)
 	};
+
+
+	const attachNameToKeyListener = ( input ) => {
+		input.addEventListener(
+			'change',
+			function () {
+				const hiddenKeyInput = input.closest( 'form' ).querySelector( '#post_type' );
+				const lowerCase      = input.value.toLowerCase();
+				const snakeCase      = lowerCase.replace( / /g, '-' );
+				const trimmed        = snakeCase.substring( 0, 20 );
+				hiddenKeyInput.value = trimmed;
+			}
+		)
+	};
+
+
+	const attachSubmitListener = ( button ) => {
+		button.addEventListener(
+			'click',
+			function () {
+				//button.closest( 'form' ).submit();
+			}
+		)
+	}
 
 
 	const cleanSpacesAndHyphens = ( string ) => {

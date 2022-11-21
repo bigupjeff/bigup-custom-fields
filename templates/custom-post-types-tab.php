@@ -34,15 +34,42 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 				<div class="submit inline-edit-save">
 
 					<?php
+					/*
 					submit_button(
 						'Save',                       // Button Text.
 						'button button-primary save', // CSS Classes.
 						'submit',                     // HTML name attribute.
 						false,                        // Wrap in <p>.
 					);
+					*/
+
+
+/*
+
+For some reason the button submits the form even without a listener function attached. I stripped a
+button back to bare <button></button> and it still submits. This is clashing with the JS functionality
+I want to use before the submit action.
+
+*/
+
+
+
 					?>
 
-					<button type="button" class="button inlineCancelButton">Cancel</button>
+					<button
+						title="Submit and save form"
+						id="submit"
+						class="button button-primary save"
+					>
+						Save
+					</button>
+					<button
+						type="button"
+						class="button
+						inlineCancelButton"
+					>
+						Cancel
+					</button>
 
 				</div>
 			</form>
