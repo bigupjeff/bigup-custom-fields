@@ -19,7 +19,6 @@ const cptEditInline = () => {
 	}
 
 	const initialise = () => {
-
 		document.querySelector( '#addNewButton' ).addEventListener(
 			'click',
 			function () {
@@ -27,7 +26,6 @@ const cptEditInline = () => {
 				insertInlineNewForm( this );
 			}
 		);
-
 		[ ...document.querySelectorAll( '.inlineEditButton' ) ].forEach ( editButton => {
 			editButton.addEventListener(
 				'click',
@@ -44,14 +42,18 @@ const cptEditInline = () => {
 		const form  = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
 		const table = document.querySelector( '#customPostsTable' );
 		form.querySelector( 'legend' ).innerHTML = 'New Custom Post Type';
+
 		table.querySelector( 'tbody' ).prepend( form );
-		readyForm( document.querySelector( '#editRow' ) );
+		table.querySelector( 'form' ).setAttribute( 'data-type-form', 'new' );
+
+		readyForm( table.querySelector( '#editRow' ) );
 		attachNameToKeyListener( document.querySelector( '#customPostsTable #editRow #name_singular' ) );
 	};
 	
 
 	const insertInlineEditForm = ( editButton ) => {
 		const form   = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
+		const table  = document.querySelector( '#customPostsTable' );
 		const data   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
 		const postID = editButton.getAttribute( 'data-post-type' );
 
@@ -65,10 +67,11 @@ const cptEditInline = () => {
 			form.querySelector( '#hiddenRow' ).setAttribute( 'id', 'hiddenRow-' + postID );
 			form.querySelector( '#editRow' ).setAttribute( 'id', 'editRow-' + postID );
 			form.querySelector( 'input#post_type' ).disabled = true;
-
+			
 			const postRow = document.getElementById( postID );
 			postRow.after( form );
 			postRow.style.display = 'none';
+			table.querySelector( 'form' ).setAttribute( 'data-type-form', 'edit' );
 
 			readyForm( document.querySelector( '#editRow-' + postID ) );
 
@@ -81,10 +84,10 @@ const cptEditInline = () => {
 	const readyForm = ( formRow ) => {
 		colspanUpdate( formRow );
 		resizeObserver.observe( formRow );
-		attachFormResetListener( formRow.querySelector( '.inlineCancelButton' ) );
+		attachFormResetListener( formRow.querySelector( '#cancelButton' ) );
 		attachNameValidationListener( formRow.querySelector( '#name_singular' ) );
 		attachNameValidationListener( formRow.querySelector( '#name_plural' ) );
-		attachSubmitListener( formRow.querySelector( '#submit' ) );
+		attachSubmitListener( formRow.querySelector( '#submitButton' ) );
 	};
 
 
@@ -151,7 +154,44 @@ const cptEditInline = () => {
 		button.addEventListener(
 			'click',
 			function () {
-				//button.closest( 'form' ).submit();
+				const form           = button.closest( 'form' );
+				const formType       = form.getAttribute( 'data-type-form' );
+				const inputsAreValid = form.reportValidity();
+		
+				if ( inputsAreValid && 'new' === formType ) {
+					const data           = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
+					const hiddenKeyInput = form.querySelector( '#post_type' );
+					let postID           = hiddenKeyInput.value;
+					
+					let i = 1;
+					while ( postID in data ) {
+						let croppedID       = postID.substring( 0, 18 );
+						const noAppendedNum = croppedID.replace( /-\d+$/g, '' );
+
+						postID = noAppendedNum + '-' + i;
+console.log( croppedID );
+						i++;
+						if ( 10 === i ) {
+							doInputMessage(
+								form.querySelector( '#name_singular' ),
+								'Post key already exists. Please choose a unique name.'
+							);
+							return;
+						}
+					}
+
+					hiddenKeyInput.value = postID;
+
+
+
+
+				} else if ( inputsAreValid && 'edit' === formType ) {
+
+				}
+
+				button.closest( 'form' ).submit();
+
+
 			}
 		)
 	}

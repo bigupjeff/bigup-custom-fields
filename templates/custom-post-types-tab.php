@@ -32,41 +32,18 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 
 				</fieldset>
 				<div class="submit inline-edit-save">
-
-					<?php
-					/*
-					submit_button(
-						'Save',                       // Button Text.
-						'button button-primary save', // CSS Classes.
-						'submit',                     // HTML name attribute.
-						false,                        // Wrap in <p>.
-					);
-					*/
-
-
-/*
-
-For some reason the button submits the form even without a listener function attached. I stripped a
-button back to bare <button></button> and it still submits. This is clashing with the JS functionality
-I want to use before the submit action.
-
-*/
-
-
-
-					?>
-
 					<button
+						type="button"
 						title="Submit and save form"
-						id="submit"
+						id="submitButton"
 						class="button button-primary save"
 					>
 						Save
 					</button>
 					<button
 						type="button"
-						class="button
-						inlineCancelButton"
+						id="cancelButton"
+						class="button"
 					>
 						Cancel
 					</button>
@@ -146,7 +123,7 @@ I want to use before the submit action.
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
 				<strong>
 					<a class="row-title" href="#" aria-label="“H1 Heading” (Edit)">
-						{$name_plural}
+						{$name_singular}
 					</a>
 				</strong>
 				<div class="row-actions">
