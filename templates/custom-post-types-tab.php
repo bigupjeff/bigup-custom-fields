@@ -14,18 +14,18 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 
 ?>
 
-<template id="inlineEditTemplate">
+<template id="inlineFormTemplate">
 	<tr id="hiddenRow" class="editActive hidden"></tr>
 	<tr id="editRow" class="editActive inline-edit-row inline-edit-row-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor">
 		<td colspan="5">
 			<form method="post" action="options.php" class="inline-edit-wrapper">
+
 				<fieldset class="inline-edit-fieldset">
 					<legend class="inline-edit-legend">
 						Edit Custom Post Type
 					</legend>
 
 					<?php
-						settings_errors();
 						settings_fields( $group );
 						Process_Settings::do_settings_in_divs( $slug );
 					?>
@@ -94,31 +94,30 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 		<?php
 
 		$custom_post_types = get_option( 'bigup-custom-fields-custom-post-types-options' );
+		// $custom_post_types passed to front end session storage below the table.
 
 		if ( false === $custom_post_types || ! is_array( $custom_post_types) ) {
 			echo '<tr class="editActive"><td><strong>No custom post types found. Click "Add New" to create one.</strong></tr></td>';
-			return;
-		}
+			$custom_post_types = null;
 
-		// CPT option passed to front end session storage below this table.
+		} else {
+			foreach ( $custom_post_types as $cpt ) {
 
-		foreach ( $custom_post_types as $cpt ) {
+				$cpt_name         = $cpt['post_type'];
+				$has_archive      = $cpt['has_archive'];
+				$public           = ( $cpt['public'] ) ? '✔' : '';
+				$show_in_menu     = $cpt['show_in_menu'];
+				$menu_position    = $cpt['menu_position'];
+				$menu_icon        = $cpt['menu_icon'];
+				$hierarchical     = $cpt['hierarchical'];
+				$taxonomies       = implode( ', ', $cpt['taxonomies'] );
+				$show_in_rest     = $cpt['show_in_rest'];
+				$show_in_graphql  = $cpt['show_in_graphql'];
+				$name_plural      = $cpt['name_plural'];
+				$name_singular    = $cpt['name_singular'];
+				$delete_with_user = $cpt['delete_with_user'];
 
-			$cpt_name         = $cpt['post_type'];
-			$has_archive      = $cpt['has_archive'];
-			$public           = ( $cpt['public'] ) ? '✔' : '';
-			$show_in_menu     = $cpt['show_in_menu'];
-			$menu_position    = $cpt['menu_position'];
-			$menu_icon        = $cpt['menu_icon'];
-			$hierarchical     = $cpt['hierarchical'];
-			$taxonomies       = implode( ', ', $cpt['taxonomies'] );
-			$show_in_rest     = $cpt['show_in_rest'];
-			$show_in_graphql  = $cpt['show_in_graphql'];
-			$name_plural      = $cpt['name_plural'];
-			$name_singular    = $cpt['name_singular'];
-			$delete_with_user = $cpt['delete_with_user'];
-
-			$html = <<<CPT
+$html = <<<CPT
 		<tr id="{$cpt_name}" class="customPostTypeRow iedit">
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
 				<strong>
@@ -151,12 +150,16 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 			</td>
 		</tr>
 CPT;
-			echo $html;
+				echo $html;
 
-		}
+			}// forEach end.
 		?>
 
 	</tbody>
 </table>
 
-<?php echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $custom_post_types ) . "' );</script>\n"; ?>
+		<?php
+
+		}// if end.
+
+		echo "<script>sessionStorage.setItem( 'bigupCPTOption', '" . wp_json_encode( $custom_post_types ) . "' );</script>\n";

@@ -18,6 +18,16 @@ const cptEditInline = () => {
 		return;
 	}
 
+
+
+//DEBUG
+const donga   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
+Object.keys( donga ).forEach( post => {
+	console.log( donga[ post ][ 'post_type' ] );
+} );
+
+
+
 	const initialise = () => {
 		document.querySelector( '#addNewButton' ).addEventListener(
 			'click',
@@ -39,7 +49,7 @@ const cptEditInline = () => {
 
 
 	const insertInlineNewForm = () => {
-		const form  = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
+		const form  = document.querySelector( '#inlineFormTemplate' ).content.cloneNode( true );
 		const table = document.querySelector( '#customPostsTable' );
 		form.querySelector( 'legend' ).innerHTML = 'New Custom Post Type';
 
@@ -52,7 +62,7 @@ const cptEditInline = () => {
 	
 
 	const insertInlineEditForm = ( editButton ) => {
-		const form   = document.querySelector( '#inlineEditTemplate' ).content.cloneNode( true );
+		const form   = document.querySelector( '#inlineFormTemplate' ).content.cloneNode( true );
 		const table  = document.querySelector( '#customPostsTable' );
 		const data   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
 		const postID = editButton.getAttribute( 'data-post-type' );
@@ -82,6 +92,7 @@ const cptEditInline = () => {
 
 
 	const postValueExists = ( data, key, value ) => {
+		if ( [ data, key, value ].includes( undefined ) ) return false;
 		let exists = false;
 		Object.keys( data ).forEach( post => {
 			if ( value === data[ post ][ key ] ) {
@@ -151,11 +162,11 @@ const cptEditInline = () => {
 		input.addEventListener(
 			'change',
 			function () {
-				const hiddenKeyInput = input.closest( 'form' ).querySelector( '#post_type' );
-				const lowerCase      = input.value.toLowerCase();
-				const snakeCase      = lowerCase.replace( / /g, '-' );
-				const trimmed        = snakeCase.substring( 0, 20 );
-				hiddenKeyInput.value = trimmed;
+				const hiddenInput = input.closest( 'form' ).querySelector( '#post_type' );
+				const lowerCase   = input.value.toLowerCase();
+				const snakeCase   = lowerCase.replace( / /g, '-' );
+				const trimmed     = snakeCase.substring( 0, 20 );
+				hiddenInput.value = trimmed;
 			}
 		)
 	};
@@ -167,50 +178,56 @@ const cptEditInline = () => {
 			function () {
 				const form           = button.closest( 'form' );
 				const formType       = form.getAttribute( 'data-type-form' );
+				const postName       = form.querySelector( '#name_singular' ).value;
+				const postsName      = form.querySelector( '#name_plural' ).value;
+				const hiddenInput    = form.querySelector( '#post_type' );
+				let   postType       = hiddenInput.value;
 				const inputsAreValid = form.reportValidity();
-		
-				if ( inputsAreValid && 'new' === formType ) {
-					const data           = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
-					const hiddenKeyInput = form.querySelector( '#post_type' );
-					let postID           = hiddenKeyInput.value;
-					const name           = form.querySelector( '#name_singular' ).value;
+				const data           = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
+				let areDuplicates    = false;
 
-					let i = 1;
-					while ( postValueExists( data, 'post_type', postID ) ) {
-						const noAppendedNum = postID.replace( /-\d+$/g, '' );
-						let croppedID       = noAppendedNum.substring( 0, 18 );
+				if ( true === !! data ) {
 
-						postID = noAppendedNum + '-' + i;
-console.log( croppedID );
-						i++;
-						if ( 10 === i ) {
-							doInputMessage(
-								form.querySelector( '#name_singular' ),
-								'Post key already exists. Please choose a unique name.'
-							);
-							return;
+					if ( inputsAreValid && 'new' === formType ) {
+						let i = 1;
+						while ( postValueExists( data, 'post_type', postType ) ) {
+							const noAppendedNum = postType.replace( /-\d$/g, '' );
+							const croppedTo18   = noAppendedNum.substring( 0, 18 );
+							postType            = croppedTo18 + '-' + i;
+							if ( 10 === i ) {
+								doInputMessage(
+									form.querySelector( '#name_singular' ),
+									'Post key duplication. Please choose a unique name.'
+								);
+								areDuplicates = true;
+							}
+							i++;
 						}
 					}
 
-					hiddenKeyInput.value = postID;
-
-					if ( postValueExists( data, 'name_singular', name ) ) {
+					if ( postValueExists( data, 'name_singular', postName ) ) {
 						doInputMessage(
 							form.querySelector( '#name_singular' ),
-							'Post name already exists. Please choose a unique name.'
+							'Post singular name already exists. Please choose a unique name.'
 						);
-						return;
+						areDuplicates = true;
 					}
 
+					if ( postValueExists( data, 'name_plural', postsName ) ) {
+						doInputMessage(
+							form.querySelector( '#name_plural' ),
+							'Post plural name already exists. Please choose a unique name.'
+						);
+						areDuplicates = true;
+					}
 
-
-				} else if ( inputsAreValid && 'edit' === formType ) {
-
+					if ( true === areDuplicates ) {
+						return;
+					}
 				}
 
+				hiddenInput.value = postType;
 				button.closest( 'form' ).submit();
-
-
 			}
 		)
 	}

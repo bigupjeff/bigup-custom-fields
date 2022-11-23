@@ -115,9 +115,7 @@ class Admin_Settings {
 				<?php echo esc_html( get_admin_page_title() ); ?>
 			</h1>
 
-			<p>
-				This page will be home to the custom fields settings
-			</p>
+			<?php settings_errors(); // Display the form save notices here. ?>
 
 			<nav class="nav-tab-wrapper">
 				<a
