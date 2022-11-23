@@ -54,6 +54,9 @@ class Sanitize {
 				return array( new Sanitize(), 'checkbox' );
 
 			case 'wp_post_key':
+				return array( new Sanitize(), 'wp_post_key' );
+
+			case 'key':
 				return array( new Sanitize(), 'key' );
 
 			default:
@@ -96,13 +99,16 @@ class Sanitize {
 				return self::checkbox( $value );
 
 			case 'wp_post_key':
+				return self::wp_post_key( $value );
+
+			case 'key':
 				return self::key( $value );
 
 			case is_array( $type ):
 				return self::arr( $type, $value );
 
 			default:
-				error_log( 'Bigup Plugin: Invalid sanitize type passed with value' );
+				error_log( 'Bigup Plugin: Invalid sanitize type "' . $type . '" passed with value' );
 		}
 	}
 
@@ -232,13 +238,23 @@ class Sanitize {
 
 
 	/**
-	 * Sanitize a WP key.
+	 * Sanitize a WP post type key.
 	 */
-	public static function key( $wp_post_key ) {
+	public static function wp_post_key( $wp_post_key ) {
 
 		$sanitized = sanitize_key( $wp_post_key );
 		$clean_wp_post_key    = substr( $sanitized, 0, 20 );
 		return $clean_wp_post_key;
+	}
+
+
+	/**
+	 * Sanitize a WP key.
+	 */
+	public static function key( $key ) {
+
+		$clean_key = sanitize_key( $key );
+		return $clean_key;
 	}
 
 
