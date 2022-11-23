@@ -185,7 +185,6 @@ class Process_Settings {
 	/**
 	 * Scrape and Sanitize Custom Post Form.
 	 *
-	 * $this->post_settings    - An array of form settings objects.
 	 */
 	public function sanitize( $input ) {
 
@@ -211,8 +210,8 @@ error_log( json_encode($input) );
 
 		foreach ( $post_settings['sections'] as $section ) {
 			foreach ( $section['settings'] as $setting ) {
-				$id = $setting['id'];
 
+				$id            = $setting['id'];
 				$sanitize_type = $setting['sanitize_type'];
 				$input_value   = isset( $input[ $id ] ) ? $input[ $id ] : null;
 
@@ -233,13 +232,20 @@ error_log( json_encode($input) );
 
 				if ( 'post_type' === $id ) {
 					$option[ $sanitized_value ][ $id ] = $sanitized_value;
+
+					// TO FIX: This only works if post_type is the first value in array.
 					$post_type                         = $sanitized_value;
 				} else {
 					$option[ $post_type ][ $id ] = $sanitized_value;
 				}
+// DEBUG
+error_log( json_encode( $option[ $post_type ][ $id ] ) );
+
 			};
 		};
 
+// DEBUG
+error_log( json_encode( $option ));
 		return $option;
 	}
 

@@ -19,15 +19,6 @@ const cptEditInline = () => {
 	}
 
 
-
-//DEBUG
-const donga   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
-Object.keys( donga ).forEach( post => {
-	console.log( donga[ post ][ 'post_type' ] );
-} );
-
-
-
 	const initialise = () => {
 		document.querySelector( '#addNewButton' ).addEventListener(
 			'click',
@@ -184,7 +175,7 @@ Object.keys( donga ).forEach( post => {
 				let   postType       = hiddenInput.value;
 				const inputsAreValid = form.reportValidity();
 				const data           = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
-				let areDuplicates    = false;
+				let   areDuplicates  = false;
 
 				if ( true === !! data ) {
 
@@ -206,6 +197,13 @@ Object.keys( donga ).forEach( post => {
 					}
 
 					if ( postValueExists( data, 'name_singular', postName ) ) {
+
+
+						// FIX ME: Can't edit post without changing name.
+						//data[ postType ][ 'name_singular' ] === postName
+
+
+
 						doInputMessage(
 							form.querySelector( '#name_singular' ),
 							'Post singular name already exists. Please choose a unique name.'
