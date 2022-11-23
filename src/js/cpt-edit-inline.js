@@ -57,7 +57,7 @@ const cptEditInline = () => {
 		const data   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
 		const postID = editButton.getAttribute( 'data-post-type' );
 
-		if ( postID in data ) {
+		if ( postValueExists( data, 'post_type', postID ) ) {
 
 			const inputValues = data[ postID ];
 			for ( let [ id, value ] of Object.entries( inputValues ) ) {
@@ -79,6 +79,17 @@ const cptEditInline = () => {
 			alert( 'Error! ' + postID + ' not found in session storage. Please alert plugin maintainer.' );
 		}
 	};
+
+
+	const postValueExists = ( data, key, value ) => {
+		let exists = false;
+		Object.keys( data ).forEach( post => {
+			if ( value === data[ post ][ key ] ) {
+				exists = true;
+			}
+		} );
+		return exists;
+	}
 
 
 	const readyForm = ( formRow ) => {
@@ -162,11 +173,12 @@ const cptEditInline = () => {
 					const data           = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
 					const hiddenKeyInput = form.querySelector( '#post_type' );
 					let postID           = hiddenKeyInput.value;
-					
+					const name           = form.querySelector( '#name_singular' ).value;
+
 					let i = 1;
-					while ( postID in data ) {
-						let croppedID       = postID.substring( 0, 18 );
-						const noAppendedNum = croppedID.replace( /-\d+$/g, '' );
+					while ( postValueExists( data, 'post_type', postID ) ) {
+						const noAppendedNum = postID.replace( /-\d+$/g, '' );
+						let croppedID       = noAppendedNum.substring( 0, 18 );
 
 						postID = noAppendedNum + '-' + i;
 console.log( croppedID );
@@ -182,6 +194,13 @@ console.log( croppedID );
 
 					hiddenKeyInput.value = postID;
 
+					if ( postValueExists( data, 'name_singular', name ) ) {
+						doInputMessage(
+							form.querySelector( '#name_singular' ),
+							'Post name already exists. Please choose a unique name.'
+						);
+						return;
+					}
 
 
 
