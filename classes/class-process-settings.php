@@ -14,17 +14,50 @@ namespace Bigup\Custom_Fields;
  */
 class Process_Settings {
 
-	private $post_settings;
-	private $posts_option;
-	private $group;
-	private $options_array_name;
 
+	/**
+	 * Post Settings.
+	 *
+	 * @var array Custom post settings input fields data extracted from JSON.
+	 */
+	private $post_settings;
+
+
+	/**
+	 * Posts Option.
+	 *
+	 * @var array Custom post option from the database.
+	 */
+	public $posts_option;
+
+
+	/**
+	 * Group.
+	 *
+	 * @var string Custom post settings group extraced from $post_settings.
+	 */
+	private $group;
+
+
+	/**
+	 * Option Array Name.
+	 *
+	 * @var string The name assigned to the option in the database.
+	 */
+	private $option_array_name;
+
+
+	/**
+	 * Construct.
+	 *
+	 * Set the class variables.
+	 */
 	public function __construct() {
-		$settings_json            = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
-		$this->post_settings      = json_decode( $settings_json, true );
-		$this->group              = $this->post_settings['group'];
-		$this->options_array_name = $this->group . '-options';
-		$this->posts_option       = get_option( $this->options_array_name );
+		$settings_json           = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings-custom-post-type.json' );
+		$this->post_settings     = json_decode( $settings_json, true );
+		$this->group             = $this->post_settings['group'];
+		$this->option_array_name = $this->group . '-options';
+		$this->posts_option      = get_option( $this->option_array_name );
 	}
 
 	/**
@@ -114,22 +147,21 @@ class Process_Settings {
 	 * add_settings_field( $id, $title, $callback, $page, $section = 'default', $args = array() )
 	 * register_setting( $setting_group, $setting_name, $args )
 	 *
-	 * @param string $settings_json - JSON object formatted settings.
 	 * @param string $post_type     - The post type key (optional).
 	 */
 	public function build_custom_post_forms( $post_type = null ) {
 
-		$post_settings       = $this->post_settings;
-		$posts_option        = $this->posts_option;
-		$page_slug           = $post_settings['slug'];
-		$group               = $this->group;
-		$options_array_name  = $this->options_array_name;
+		$post_settings     = $this->post_settings;
+		$posts_option      = $this->posts_option;
+		$page_slug         = $post_settings['slug'];
+		$group             = $this->group;
+		$option_array_name = $this->option_array_name;
 
 		$values = isset( $posts_option[ $post_type ] ) ? $posts_option : array();
 
 		register_setting(
 			$group,                                                // Option group.
-			$options_array_name,                                   // Option name.
+			$option_array_name,                                    // Option name.
 			array(
 				'sanitize_callback' => array( $this, 'sanitize' ), // Sanitize function.
 				'show_in_rest'      => true,                       // Available to REST?
@@ -162,9 +194,9 @@ class Process_Settings {
 
 				if ( 'select' === $setting['input_type']
 				&& true === ! ! $setting['select_multi'] ) {
-					$html_name_attr = $options_array_name . '[' . $id . '][]';
+					$html_name_attr = $option_array_name . '[' . $id . '][]';
 				} else {
-					$html_name_attr = $options_array_name . '[' . $id . ']';
+					$html_name_attr = $option_array_name . '[' . $id . ']';
 				}
 				$output_callback = function() use ( $setting, $value, $html_name_attr ) {
 					echo Get_Input::markup( $setting, $value, $html_name_attr );
@@ -190,11 +222,7 @@ class Process_Settings {
 
 		$posts_option  = $this->posts_option;
 		$post_settings = $this->post_settings;
-
-//DEBUG
-error_log( '### DEBUG ###' );
-$out = var_dump( $input );
-error_log( json_encode($input) );
+		$option        = ( is_array( $posts_option ) ) ? $posts_option : array();
 
 		if ( ! is_array( $input ) || ! isset( $input ) ) {
 			add_settings_error(
@@ -206,23 +234,28 @@ error_log( json_encode($input) );
 			return;
 		}
 
-
 		if ( isset( $input['delete'] ) ) {
-			add_settings_error(
-				$post_settings['group'],
-				'submitted-delete-request',
-				'Custom post type deleted successfully.',
-				'success'
-			);
-			return;
+
+			if ( isset( $option[ $input['post_type'] ] ) ) {
+				unset( $option[ $input['post_type'] ] );
+				add_settings_error(
+					$post_settings['group'],
+					'submitted-delete-request',
+					'Custom post type deleted successfully.',
+					'success'
+				);
+
+			} else {
+				add_settings_error(
+					$post_settings['group'],
+					'submitted-delete-request',
+					'Error: Custom post type not found in saved custom post type array.',
+					'error'
+				);
+			}
+
+			return $option;
 		}
-
-
-
-
-
-		// Grab the existing option with array of ALL post types.
-		$option = ( is_array( $posts_option ) ) ? $posts_option : array();
 
 		foreach ( $post_settings['sections'] as $section ) {
 			foreach ( $section['settings'] as $setting ) {
@@ -254,14 +287,9 @@ error_log( json_encode($input) );
 				} else {
 					$option[ $post_type ][ $id ] = $sanitized_value;
 				}
-// DEBUG
-error_log( json_encode( $option[ $post_type ][ $id ] ) );
-
 			};
 		};
 
-// DEBUG
-error_log( json_encode( $option ));
 		return $option;
 	}
 
@@ -273,7 +301,6 @@ error_log( json_encode( $option ));
 	 * which wrap settings in a table by default.
 	 *
 	 * @param string $page Slug title of the admin page.
-	 * @param string $section Slug title of the settings section.
 	 */
 	public static function do_settings_in_divs( $page ) {
 		global $wp_settings_sections, $wp_settings_fields;
@@ -287,6 +314,8 @@ error_log( json_encode( $option ));
 			if ( ! isset( $wp_settings_fields[ $page ][ $section[ 'id' ] ] ) ) {
 				return;
 			}
+
+			echo '<h3>' . esc_html( $section['title'] ) . '</h3>';
 
 			foreach ( (array) $wp_settings_fields[ $page ][ $section[ 'id' ] ] as $field ) {
 

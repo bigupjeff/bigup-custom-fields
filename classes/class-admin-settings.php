@@ -1,18 +1,6 @@
 <?php
 /**
- * Admin Settings Handler
- *
- * @package herringbone
- * @author Jefferson Real <me@jeffersonreal.uk>
- * @copyright Copyright (c) 2022, Jefferson Real
- */
-
-namespace Bigup\Custom_Fields;
-
-/**
- * Bigup Custom Fields - Admin Settings.
- *
- * Hook into the WP admin area and add menu settings pages.
+ * Admin Settings Handler.
  *
  * @package bigup_custom_fields
  * @author Jefferson Real <me@jeffersonreal.uk>
@@ -21,12 +9,18 @@ namespace Bigup\Custom_Fields;
  * @link https://jeffersonreal.uk
  */
 
+namespace Bigup\Custom_Fields;
+
 // WordPress dependencies.
 use function menu_page_url;
 // Include for access to function add_settings_section() before admin_init to support GraphQL.
 require_once ABSPATH . 'wp-admin/includes/template.php';
 
-
+/**
+ * Bigup Custom Fields - Admin Settings.
+ *
+ * Hook into the WP admin area and add menu settings pages.
+ */
 class Admin_Settings {
 
 
@@ -61,6 +55,7 @@ class Admin_Settings {
 		add_action( 'admin_menu', array( &$this, 'register_admin_menu' ), 99 );
 		add_action( 'init', array( &$this, 'do_settings' ) );
 		add_action( 'updated_option', array( &$this, 'process_custom_fields' ) );
+
 	}
 
 
@@ -173,7 +168,7 @@ class Admin_Settings {
 
 
 	/**
-	 * Build Options
+	 * Do Settings.
 	 *
 	 * Get the json data from settings.json and convert to an array before sending to build_settings();
 	 */
@@ -184,6 +179,16 @@ class Admin_Settings {
 		$json             = file_get_contents( BIGUP_CUSTOM_FIELDS_PLUGIN_PATH . 'data/settings.json' );
 		$process_settings->build_from_json( $json );
 		$process_settings->build_custom_post_forms();
+
+		$option = $process_settings->posts_option;
+		foreach ( $option as $post_type => $args ) {
+			unset( $args['post_type'] );
+			Register_Post_Types::add( $post_type, $args );
+		}
+
+		$cpts = Register_Post_Types::get_registered();
+		error_log( '### Register_Post_Types->get_registered() ###' );
+		error_log( json_encode( $cpts ) );
 	}
 
 

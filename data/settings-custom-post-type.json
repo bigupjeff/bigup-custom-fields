@@ -3,8 +3,8 @@
 	"group": "bigup-custom-fields-custom-post-types",
 	"sections": [
 		{
-			"id": "section_custom_post",
-			"title": "Custom Post Settings",
+			"id": "section_main_settings",
+			"title": "Main Settings",
 			"description_html": null,
 			"settings": [
 				{
@@ -43,7 +43,14 @@
 					"default": "",
 					"placeholder": "My Posts",
 					"regex": "[- \\p{L}\\p{N}]*"
-				},
+				}
+			]
+		},
+		{
+			"id": "section_advanced_settings",
+			"title": "Advanced Settings",
+			"description_html": null,
+			"settings": [
 				{
 					"id": "public",
 					"label": "Public",
