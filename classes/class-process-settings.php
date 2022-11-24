@@ -199,11 +199,27 @@ error_log( json_encode($input) );
 		if ( ! is_array( $input ) || ! isset( $input ) ) {
 			add_settings_error(
 				$post_settings['group'],
-				$post_settings['group'],
-				'Bigup Web Error: Unexpected option values recieved. Please report this error to the plugin developer.'
+				'submitted-form-inputs',
+				'Bigup Web Error: Unexpected option values recieved. Please report this error to the plugin developer.',
+				'error'
 			);
 			return;
 		}
+
+
+		if ( isset( $input['delete'] ) ) {
+			add_settings_error(
+				$post_settings['group'],
+				'submitted-delete-request',
+				'Custom post type deleted successfully.',
+				'success'
+			);
+			return;
+		}
+
+
+
+
 
 		// Grab the existing option with array of ALL post types.
 		$option = ( is_array( $posts_option ) ) ? $posts_option : array();

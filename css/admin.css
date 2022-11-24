@@ -68,3 +68,18 @@
 	padding: 0.2em 1em;
 	color: #000;
 }
+
+.row-actions .inlineDeleteButton,
+.row-actions .inlineDeleteButton:hover {
+	color: #b32d2e;
+}
+
+.submit button.delete {
+	background: #b32d2e;
+	border-color: #b32d2e;
+}
+
+.submit button.delete:hover {
+	background: #841e1f;
+	border-color: #841e1f;
+}

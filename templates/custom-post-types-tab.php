@@ -25,6 +25,10 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 						Edit Custom Post Type
 					</legend>
 
+					<template id="deleteFlag">
+						<input type="hidden" name="bigup-custom-fields-custom-post-types-options[delete]" id="delete" value="1" checked></input>	
+					</template>
+
 					<?php
 						settings_fields( $group );
 						Process_Settings::do_settings_in_divs( $slug );
@@ -65,12 +69,10 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 <table id="customPostsTable" class="wp-list-table widefat fixed striped table-view-list">
 	<thead>
 		<tr>
-			<th scope="col" id="title" class="manage-column column-title column-primary sortable desc">
-				<a href="http://localhost:8001/wp-admin/edit.php?post_type=page&amp;orderby=title&amp;order=asc">
-					<span>
-						Post Type
-					</span>
-				</a>
+			<th scope="col" id="title" class="manage-column column-primary">
+				<span>
+					Post Type
+				</span>
 			</th>
 			<th scope="col" id="icon" class="manage-column column-primary">
 				<span>
@@ -103,7 +105,7 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 		} else {
 			foreach ( $custom_post_types as $cpt ) {
 
-				$cpt_name         = $cpt['post_type'];
+				$post_type_key    = $cpt['post_type'];
 				$has_archive      = $cpt['has_archive'];
 				$public           = ( $cpt['public'] ) ? '✔' : '';
 				$show_in_menu     = $cpt['show_in_menu'];
@@ -118,24 +120,36 @@ $slug  = 'bigup-custom-fields-custom-post-types';
 				$delete_with_user = $cpt['delete_with_user'];
 
 $html = <<<CPT
-		<tr id="{$cpt_name}" class="customPostTypeRow iedit">
+		<tr id="{$post_type_key}" class="customPostTypeRow iedit">
 			<td class="title column-title has-row-actions column-primary page-title" data-colname="Title">
 				<strong>
-					<a class="row-title" href="#" aria-label="“H1 Heading” (Edit)">
-						{$name_singular}
-					</a>
+					{$name_singular}
 				</strong>
 				<div class="row-actions">
 					<span class="inline hide-if-no-js">
-						<button data-post-type="{$cpt_name}" type="button" class="inlineEditButton button-link editinline" aria-label="edit" aria-expanded="false">
+						<button
+							data-post-type="{$post_type_key}"
+							type="button"
+							class="inlineEditButton button-link editinline"
+							aria-label="edit custom post type"
+							aria-expanded="false"
+						>
 							Edit
 						</button>
+					</span>
+					<span class="inline hide-if-no-js">
 						|
 					</span>
-					<span class="trash">
-						<a href="#" class="submitdelete" aria-label="Move “H1 Heading” to the Bin">
+					<span class="hide-if-no-js">
+						<button
+							data-post-type="{$post_type_key}"
+							type="button"
+							class="inlineDeleteButton button-link"
+							aria-label="delete custom post type"
+							aria-expanded="false"
+						>
 							Bin
-						</a>
+						</button>
 					</span>
 				</div>
 			</td>

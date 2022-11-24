@@ -11,7 +11,6 @@
 
 const cptEditInline = () => {
 
-	// If this isn't the 'custom-post-types' tab, bail.
 	const queryString = window.location.search;
 	const urlParams   = new URLSearchParams( queryString );
 	if ( ! urlParams.has( 'tab' ) || 'custom-post-types' !== urlParams.get( 'tab' ) ) {
@@ -24,7 +23,7 @@ const cptEditInline = () => {
 			'click',
 			function () {
 				resetTable();
-				insertInlineNewForm( this );
+				insertInlineNewForm();
 			}
 		);
 		[ ...document.querySelectorAll( '.inlineEditButton' ) ].forEach ( editButton => {
@@ -33,6 +32,14 @@ const cptEditInline = () => {
 				function () {
 					resetTable();
 					insertInlineEditForm( this );
+				}
+			)
+		} );
+		[ ...document.querySelectorAll( '.inlineDeleteButton' ) ].forEach ( deleteButton => {
+			deleteButton.addEventListener(
+				'click',
+				function () {
+					insertInlineDeleteForm( this );
 				}
 			)
 		} );
@@ -52,34 +59,61 @@ const cptEditInline = () => {
 	};
 	
 
-	const insertInlineEditForm = ( editButton ) => {
-		const form   = document.querySelector( '#inlineFormTemplate' ).content.cloneNode( true );
-		const table  = document.querySelector( '#customPostsTable' );
-		const data   = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
-		const postID = editButton.getAttribute( 'data-post-type' );
+	const insertInlineEditForm = ( button ) => {
+		const template = document.querySelector( '#inlineFormTemplate' ).content.cloneNode( true );
+		const table    = document.querySelector( '#customPostsTable' );
+		const data     = JSON.parse( sessionStorage.getItem( 'bigupCPTOption' ) );
+		const postID   = button.getAttribute( 'data-post-type' );
+
+		button.setAttribute( 'aria-expanded', 'true' );
 
 		if ( postValueExists( data, 'post_type', postID ) ) {
 
 			const inputValues = data[ postID ];
 			for ( let [ id, value ] of Object.entries( inputValues ) ) {
-				form.getElementById( id ).value = value;
+				template.getElementById( id ).value = value;
 			}
 
-			form.querySelector( '#hiddenRow' ).setAttribute( 'id', 'hiddenRow-' + postID );
-			form.querySelector( '#editRow' ).setAttribute( 'id', 'editRow-' + postID );
-			form.querySelector( 'input#post_type' ).disabled = true;
+			template.querySelector( '#hiddenRow' ).setAttribute( 'id', 'hiddenRow-' + postID );
+			template.querySelector( '#editRow' ).setAttribute( 'id', 'editRow-' + postID );
 			
 			const postRow = document.getElementById( postID );
-			postRow.after( form );
+			postRow.after( template );
 			postRow.style.display = 'none';
-			table.querySelector( 'form' ).setAttribute( 'data-type-form', 'edit' );
+			
+			const form = table.querySelector( 'form' );
+			form.setAttribute( 'data-type-form', 'edit' );
 
 			readyForm( document.querySelector( '#editRow-' + postID ) );
+
+			return form;
 
 		} else {
 			alert( 'Error! ' + postID + ' not found in session storage. Please alert plugin maintainer.' );
 		}
 	};
+
+
+	const insertInlineDeleteForm = ( deleteButton ) => {
+		const form         = insertInlineEditForm( deleteButton );
+		const submitButton = form.querySelector( '#submitButton' );
+		const legend       = form.querySelector( 'legend' );
+		const hiddenInput  = form.querySelector( '#post_type' );
+		const postName     = form.querySelector( '#name_singular' ).value;
+		const deleteFlag   = form.querySelector( '#deleteFlag' ).content.cloneNode( true );
+
+		deleteButton.setAttribute( 'aria-expanded', 'true' );
+
+		while ( true === !! hiddenInput.nextSibling  ) {
+			hiddenInput.nextSibling.remove();
+		}
+		hiddenInput.after( deleteFlag );
+
+		legend.innerHTML = 'Are you sure you want to delete post type "' + postName + '"?';
+
+		submitButton.innerHTML = 'Delete';
+		submitButton.classList.add( 'delete' );
+	}
 
 
 	const postValueExists = ( data, key, value ) => {
@@ -167,7 +201,14 @@ const cptEditInline = () => {
 		button.addEventListener(
 			'click',
 			function () {
-				const form           = button.closest( 'form' );
+
+				const form = button.closest( 'form' );
+
+				if ( button.classList.contains( 'delete' ) ) {
+					form.submit();
+					return;
+				}
+
 				const formType       = form.getAttribute( 'data-type-form' );
 				const postName       = form.querySelector( '#name_singular' ).value;
 				const postsName      = form.querySelector( '#name_plural' ).value;
@@ -196,14 +237,7 @@ const cptEditInline = () => {
 						}
 					}
 
-					if ( postValueExists( data, 'name_singular', postName ) ) {
-
-
-						// FIX ME: Can't edit post without changing name.
-						//data[ postType ][ 'name_singular' ] === postName
-
-
-
+					if ( postValueExists( data, 'name_singular', postName ) && 'edit' !== formType ) {
 						doInputMessage(
 							form.querySelector( '#name_singular' ),
 							'Post singular name already exists. Please choose a unique name.'
@@ -211,7 +245,7 @@ const cptEditInline = () => {
 						areDuplicates = true;
 					}
 
-					if ( postValueExists( data, 'name_plural', postsName ) ) {
+					if ( postValueExists( data, 'name_plural', postsName ) && 'edit' !== formType ) {
 						doInputMessage(
 							form.querySelector( '#name_plural' ),
 							'Post plural name already exists. Please choose a unique name.'
@@ -225,7 +259,7 @@ const cptEditInline = () => {
 				}
 
 				hiddenInput.value = postType;
-				button.closest( 'form' ).submit();
+				form.submit();
 			}
 		)
 	}
@@ -259,6 +293,12 @@ const cptEditInline = () => {
 	const resetTable = () => {
 		[ ...document.querySelectorAll( '.customPostTypeRow' ) ].forEach ( tr => {
 			tr.style.display = 'table-row';
+		} );
+		[ ...document.querySelectorAll( '.inlineEditButton' ) ].forEach ( editButton => {
+			editButton.setAttribute( 'aria-expanded', 'false' );
+		} );
+		[ ...document.querySelectorAll( '.inlineDeleteButton' ) ].forEach ( deleteButton => {
+			deleteButton.setAttribute( 'aria-expanded', 'false' );
 		} );
 		[ ...document.querySelectorAll( '.editActive' ) ].forEach ( tr => {
 			resizeObserver.unobserve( tr );
