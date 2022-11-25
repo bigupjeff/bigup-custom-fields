@@ -148,7 +148,7 @@ $html = <<<CPT
 							aria-label="delete custom post type"
 							aria-expanded="false"
 						>
-							Bin
+							Delete
 						</button>
 					</span>
 				</div>
