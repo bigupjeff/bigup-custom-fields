@@ -50,7 +50,7 @@ class Admin_Settings {
 	 * do_settings() is hooked in  to 'init' instead of 'admin_init' to support GraphQL.
 	 */
 	public function __construct() {
-		add_action( 'bigup_below_parent_settings_page_heading', array( &$this, 'echo_plugin_settings_link' ) );
+		add_action( 'bigup_plugin_settings_dashboard_entry', array( &$this, 'echo_plugin_settings_link' ) );
 		new Admin_Settings_Parent();
 		add_action( 'admin_menu', array( &$this, 'register_admin_menu' ), 99 );
 		add_action( 'init', array( &$this, 'do_settings' ) );
